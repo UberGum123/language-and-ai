@@ -1,0 +1,2 @@
+# Prevent data from being pushed to the github repo cause its too much data
+data/political_leaning.csv

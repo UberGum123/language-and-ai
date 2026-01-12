@@ -22,6 +22,7 @@ class Modeler:
             dataset: Preprocessed dataset with folds.
             (Optional) hyperparameters: a list of C's for the SVM model.
     """    
+    @staticmethod
     def train_svm(dataset, hyperparameters):
         logger = Logger(log_file="svm_training_results.log")
         
@@ -58,7 +59,7 @@ class Modeler:
                 clf = LinearSVC(
                     C=c_value,
                     class_weight="balanced",
-                    max_iter=100000
+                    max_iter=None
                 )
 
                 clf.fit(X_train_vec, y_train)

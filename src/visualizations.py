@@ -4,7 +4,7 @@ import matplotlib
 import seaborn as sns
 import pandas as pd
 import numpy as np
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
 matplotlib.use('Agg')  # Use a non-interactive backend for environments without display
 
@@ -108,48 +108,42 @@ class Visualizer:
         plt.tight_layout()
         plt.savefig(f"output/{title}.png")
         
-    def plot_pca_embeddings(self, X_vec, y, class_names, title):
+    def plot_pca_embeddings(self, X_vec, y, class_names, title="PCA of Document Vectors"):
         """
-        Reduces TF-IDF vectors to 2D using PCA and plots them.
+        Reduces TF-IDF vectors to 2D using TruncatedSVD (works with sparse matrices).
+        """
+    
+        print(f"Reducing {X_vec.shape[0]} documents from {X_vec.shape[1]} to 2 dimensions...")
         
-        Args:
-            X_vec: Sparse TF-IDF matrix (or dense array).
-            y: Array of labels (integers or strings matching class_names order).
-            class_names: List of class names for legend.
-        """
-        # PCA requires dense matrix. Warning: Heavy for very large datasets.
-        # Use TruncatedSVD for true sparse support, but PCA requested.
-        if hasattr(X_vec, "toarray"):
-            X_dense = X_vec.toarray()
-        else:
-            X_dense = X_vec
-
-        pca = PCA(n_components=2)
-        X_pca = pca.fit_transform(X_dense)
+        svd = TruncatedSVD(n_components=2, random_state=42)
+        X_reduced = svd.fit_transform(X_vec)
         
         plt.figure(figsize=(10, 8))
         
         # Create a DataFrame for easy plotting with Seaborn
-        df_pca = pd.DataFrame(data=X_pca, columns=['PC1', 'PC2'])
+        df_plot = pd.DataFrame(data=X_reduced, columns=['Component 1', 'Component 2'])
         
         # If y is encoded (0,1,2), map to names
-        if np.issubdtype(type(y[0]), np.integer):
-            df_pca['Label'] = [class_names[i] for i in y]
+        if len(y) > 0 and np.issubdtype(type(y[0]), np.integer):
+            df_plot['Label'] = [class_names[i] for i in y]
         else:
-            df_pca['Label'] = y
+            df_plot['Label'] = y
 
         sns.scatterplot(
-            x='PC1', 
-            y='PC2', 
+            x='Component 1', 
+            y='Component 2', 
             hue='Label', 
             style='Label',
-            data=df_pca, 
+            data=df_plot, 
             palette='deep',
             s=60,
             alpha=0.8
         )
         
-        plt.title(title)
+        # Add explained variance to title
+        explained_var = svd.explained_variance_ratio_.sum() * 100
+        plt.title(f"{title}\n({explained_var:.1f}% variance explained)")
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.tight_layout()
         plt.savefig(f"output/{title}.png")
+        plt.show()

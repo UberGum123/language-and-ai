@@ -7,7 +7,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 class Descriptives:
     """
     Computes and plots descriptive statistics for a dataset.
-    Useful for exploratory data analysis.
+    Useful for exploratory data .
     """
     def plot_label_distribution(self, dataset, label_column):
         """
@@ -18,6 +18,7 @@ class Descriptives:
             label_column (str): The name of the column containing labels.In this particular case, 
             it will most likely be 'political_leaning'.
         """
+        print(f"\n Plotting label distribution for column: {label_column}")
         label_counts = dataset[label_column].value_counts()
         sns.barplot(x=label_counts.index, y=label_counts.values)
         plt.title(f'Label Distribution for label {label_column}')
@@ -33,7 +34,7 @@ class Descriptives:
             text_column (str): The name of the column containing text data.
             label_column (str): The name of the column containing labels.
         """
-        
+        print(f"\n Below are word and character count statistics per label: {label_column}")
         dataset['char_count'] = dataset['post'].str.len()
         dataset['word_count'] = dataset['post'].str.split().str.len()
 
@@ -57,12 +58,13 @@ class Descriptives:
             dataset (pd.DataFrame): The dataset containing author information.
             author_column (str): The name of the column containing author IDs.
         """
+        print(f"\n Below are some author statistics based on column: {author_column}")
         unique_authors = dataset[author_column].nunique()
         total_posts = len(dataset)
         
         # Count posts per author
-        author_counts = dataset['author_id'].value_counts().reset_index()
-        author_counts.columns = ['author_id', 'post_count']
+        author_counts = dataset[author_column].value_counts().reset_index()
+        author_counts.columns = [author_column, 'post_count']
 
         # Descriptive Stats
         print(author_counts['post_count'].describe())
@@ -100,7 +102,7 @@ class Descriptives:
             df (pd.DataFrame): The dataset containing text and labels.
             top_n (int): The number of top words to retrieve per label.
         """
-        
+        print(f"\nBelow are the top {top_n} words per political leaning:")
         # What are the most common words?
         tfidf = TfidfVectorizer(
             max_features=None,
@@ -118,6 +120,7 @@ class Descriptives:
             Args: label (str): The political leaning label.
                   top_n (int): Number of top terms to return.
             """
+            print(f"\nBelow are the top TF-IDF terms for label: {label}")
             # Boolean mask
             idx = df['political_leaning'] == label
             # Convert to integer row indices for sparse matrix
@@ -131,7 +134,6 @@ class Descriptives:
             
             return feature_names[top_idx]
 
-        print(f'Top words right:\n{top_tfidf_terms('right')}')
-        print(f'Top words center:\n{top_tfidf_terms('center')}')
-        print(f'Top words left:\n{top_tfidf_terms('left')}')
-
+        printf(f'Top words right:\n{top_tfidf_terms("right", top_n)}')
+        printf(f'Top words center:\n{top_tfidf_terms("center", top_n)}')
+        printf(f'Top words left:\n{top_tfidf_terms("left", top_n)}')

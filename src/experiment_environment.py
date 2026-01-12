@@ -40,6 +40,7 @@ class ExperimentEnvironment:
     def __init__(self, config):
         self.config = config
         self.dataset = None
+        self.get_descriptive_stats = Descriptives()
     
     def config_sanity_checks(self):
         mandatory_fields = ['data', 'descriptive_statistics', 'modeling', 'preprocessing', 'masking']
@@ -67,17 +68,31 @@ class ExperimentEnvironment:
             if field not in self.config['preprocessing']:
                 raise ValueError(f"Missing mandatory preprocessing configuration field: {field}")
         
-    
-    def load_data(self):
-        #TODO: Implement data loading based on config here,if not enabled: return. jsut load, no preprocessing yet
-        pass
-    
     def preprocess_data(self):
-        #TODO: Implement data preprocessing based on config here
-        pass
+        print(f"\n Starting data preprocessing")
+        get_descriptive_stats_after_preprocessing = self.config['preprocessing']['get_descriptive_statistics_after_preprocessing']
+        text_column = self.config['data']['text_column']
+        label_column = self.config['data']['label_column']
+        filepath = self.config['data']['file_path']
+        
+        number_of_folds = self.config['preprocessing']['number_of_folds']
+        reader = Reader(n_splits=number_of_folds)
+        processed_dataset = reader.load_and_preprocess_csv(
+            filepath,
+            text_column=text_column,
+            label_column=label_column
+        )
+        
+        print(f"\n Data preprocessing complete.")
+        if get_descriptive_stats_after_preprocessing:
+            print("Outputting descriptive statistics for the processed data")
+            #TODO: Implement descriptive statistics for processed data
+        return processed_dataset
+            
     
     def get_descriptive_stats(self):
         #TODO: Implement descriptive statistics based on config here
+        
         pass
     
     def train_model(self):

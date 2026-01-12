@@ -61,7 +61,7 @@ class Descriptives:
         total_posts = len(dataset)
         
         # Count posts per author
-        author_counts = df['author_id'].value_counts().reset_index()
+        author_counts = dataset['author_id'].value_counts().reset_index()
         author_counts.columns = ['author_id', 'post_count']
 
         # Descriptive Stats

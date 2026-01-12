@@ -150,6 +150,7 @@ class Reader:
         if load_from_existing:
             return DatasetSaver.load_dataset("cache/political_leaning.joblib")
         df = pd.read_csv(csv_path)
+        df = df.truncate(after=1000)  # For testing purposes only (speed up)
         dataset = Dataset(df)
         # --------
         # Preprocessing

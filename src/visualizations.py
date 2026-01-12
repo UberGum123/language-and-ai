@@ -1,10 +1,12 @@
 
 import matplotlib.pyplot as plt
+import matplotlib
 import seaborn as sns
 import pandas as pd
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
+matplotlib.use('Agg')  # Use a non-interactive backend for environments without display
 
 class Visualizer:
     """Handles all visualization tasks for the Modeler."""
@@ -36,7 +38,7 @@ class Visualizer:
         plt.tight_layout()
         plt.show()
         
-    def plot_metrics_summary(self, metrics_dict, title="Average Metrics Across Folds"):
+    def plot_metrics_summary(self, metrics_dict, title):
         """
         Plots a bar chart with error bars for different metrics (Macro F1, Weighted F1, MCC).
         
@@ -60,9 +62,9 @@ class Visualizer:
         plt.title(title)
         plt.ylim(0, 1.05)  
         plt.tight_layout()
-        plt.show()
+        plt.savefig(f"output/{title}.png")
     
-    def plot_top_features(self, vectorizer, model, class_names, top_n=10):
+    def plot_top_features(self, vectorizer, model, class_names, top_n, title):
         """
         Plots the most positive feature weights (n-grams) per class.
         
@@ -104,9 +106,9 @@ class Visualizer:
             ax.set_xlabel("Coefficient Weight")
 
         plt.tight_layout()
-        plt.show()
+        plt.savefig(f"output/{title}.png")
         
-    def plot_pca_embeddings(self, X_vec, y, class_names, title="PCA of Document Vectors"):
+    def plot_pca_embeddings(self, X_vec, y, class_names, title):
         """
         Reduces TF-IDF vectors to 2D using PCA and plots them.
         
@@ -150,4 +152,4 @@ class Visualizer:
         plt.title(title)
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.tight_layout()
-        plt.show()
+        plt.savefig(f"output/{title}.png")

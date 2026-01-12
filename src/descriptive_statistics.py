@@ -48,6 +48,7 @@ class Descriptives:
         plt.xlabel("Word Count")
         plt.ylabel("Cumulative Probability")
         plt.title("CDF of Word Count")
+        plt.savefig("output/word_count_cdf.png")
         plt.show()
         
     def get_author_info(self, dataset, author_column):
@@ -79,7 +80,7 @@ class Descriptives:
         plt.subplot(1, 2, 2)
         sns.boxplot(y=author_counts['post_count'])
         plt.title("Boxplot of Post Counts")
-        plt.show()
+        plt.savefig("output/author_boxplot.png")
 
         #Show the users with the most posts
         print("Top 10 Most Active Authors")

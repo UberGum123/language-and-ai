@@ -12,6 +12,7 @@ class ExperimentEnvironment:
     """ Parses user configuration, sets up the experiment environment accordingly, and carries out the experiment. """
     def __init__(self, config):
         self.config = config
+        self.dataset = None
         self.descriptive_stats = Descriptives()
     
     def config_sanity_checks(self):
@@ -98,10 +99,8 @@ class ExperimentEnvironment:
                 author_column
             )
         if get_top_n_words_per_label is not None:
-            self.descriptive_stats.top_n_words_per_label(
+            self.descriptive_stats.get_top_words_per_leaning(
                 self.dataset,
-                text_column,
-                label_column,
                 get_top_n_words_per_label
             )
 
@@ -128,7 +127,11 @@ class ExperimentEnvironment:
             # Validate configuration
             self.config_sanity_checks()
             print("Configuration is valid.")
-            
+            # Load raw dataset
+            data_config = self.config['data']
+            filepath = data_config['file_path']
+            self.dataset = pd.read_csv(filepath)
+            print("Raw dataset is loaded")
             # Run descriptive statistics on raw data
             self.get_descriptive_stats()
             

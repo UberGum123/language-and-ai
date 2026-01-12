@@ -13,7 +13,7 @@ class Logger:
     A simple logger class to log messages to console and file. 
     Called by the Modeller class to log the experiments' progress and statistics.
     """
-    def __init__(self, log_file='experiment.log'):
+    def __init__(self, log_file='output/experiment.log'):
         self.log_file = log_file
                 
         #Clear/Create the log file at the start

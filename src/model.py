@@ -25,7 +25,7 @@ class Modeler:
     """    
     @staticmethod
     def train_svm(dataset, hyperparameters):
-        logger = Logger(log_file="svm_training_results.log")
+        logger = Logger(log_file="output/svm_training_results.log")
         visualizer = Visualizer()
         
         label_encoder = LabelEncoder()
@@ -132,7 +132,8 @@ class Modeler:
                     last_vectorizer,
                     last_model,
                     class_names,
-                    top_n=15
+                    top_n=15,
+                    title = f"Top Features per Class (C={c_value})"
                 )
                 
                 # PCA Embeddings

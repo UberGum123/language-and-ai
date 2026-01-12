@@ -2,6 +2,8 @@ from descriptive_statistics import Descriptives
 from reader import Reader
 import pandas as pd
 
+from src.model import Modeler
+
 # Parses user input on the experiment setup.
 # Accepts user input in a JSON schema format    
 # {
@@ -40,7 +42,7 @@ class ExperimentEnvironment:
     def __init__(self, config):
         self.config = config
         self.dataset = None
-        self.get_descriptive_stats = Descriptives()
+        self.descriptive_stats = Descriptives()
     
     def config_sanity_checks(self):
         mandatory_fields = ['data', 'descriptive_statistics', 'modeling', 'preprocessing', 'masking']
@@ -91,14 +93,59 @@ class ExperimentEnvironment:
             
     
     def get_descriptive_stats(self):
-        #TODO: Implement descriptive statistics based on config here
+
+        descriptive_config = self.config['descriptive_statistics']
+        enabled = descriptive_config['enabled']
+        if not enabled:
+            return
         
-        pass
+        # Get everythin that we need from the JSON config
+        plot_label_distribution = descriptive_config['plot_label_distribution']
+        word_count_per_label = descriptive_config['word_count_per_label']
+        get_author_info = descriptive_config['get_author_info']
+        get_top_n_words_per_label = descriptive_config['get_top_n_words_per_label']
+        label_column = self.config['data']['label_column']
+        text_column = self.config['data']['text_column']
+        author_column = self.config['data']['author_column']
+        
+        if plot_label_distribution:
+            self.descriptive_stats.plot_label_distribution(
+                self.dataset,
+                label_column
+            )
+        if word_count_per_label:
+            self.descriptive_stats.word_count_per_label(
+                self.dataset,
+                text_column,
+                label_column
+            )
+        if get_author_info:
+            self.descriptive_stats.get_author_info(
+                self.dataset,
+                author_column
+            )
+        if get_top_n_words_per_label is not None:
+            self.descriptive_stats.top_n_words_per_label(
+                self.dataset,
+                text_column,
+                label_column,
+                get_top_n_words_per_label
+            )
     
     def train_model(self):
-        #TODO: Implement model training based on config here
-        pass
-    
+        modelling_config = self.config['modeling']
+        enabled = modelling_config['enabled']
+        if not enabled:
+            return
+        model_type = modelling_config['model_type']
+        hyperparameters = modelling_config['hyperparameters']
+        if model_type == "SVM":
+            Modeler.train_svm(self.dataset, hyperparameters['C'])
+        elif model_type == "BERT":
+            raise NotImplementedError("BERT modeling not yet implemented.")
+        else:
+            raise ValueError(f"Wrong model type: {model_type}, choose between SVM and BERT")
+        
     def mask(self):
         #TODO: Implement masking based on config here, and also the masking functionality in the reader
         pass

@@ -41,3 +41,54 @@ class ExperimentEnvironment:
         self.config = config
         self.dataset = None
     
+    def config_sanity_checks(self):
+        #TODO: Implement sanity checks for the config here
+        pass
+    
+    def load_data(self):
+        #TODO: Implement data loading based on config here,if not enabled: return. jsut load, no preprocessing yet
+        pass
+    
+    def preprocess_data(self):
+        #TODO: Implement data preprocessing based on config here
+        pass
+    
+    def get_descriptive_stats(self):
+        #TODO: Implement descriptive statistics based on config here
+        pass
+    
+    def train_model(self):
+        #TODO: Implement model training based on config here
+        pass
+    
+    def mask(self):
+        #TODO: Implement masking based on config here, and also the masking functionality in the reader
+        pass
+    
+    def run(self):
+        try:
+            # Validate configuration
+            self.validate_config()
+            print("Configuration is valid.")
+            
+            # Load data
+            self.load_data()
+            
+            # Run descriptive statistics on raw data
+            self.run_descriptive_statistics()
+            
+            # Preprocess data (if modeling is enabled)
+            processed_dataset = self.run_preprocessing()
+            
+            # Run modeling
+            if processed_dataset is not None:
+                self.run_modeling(processed_dataset)
+            
+            # Run masking experiments
+            self.run_masking()
+
+            print("EXPERIMENT COMPLETE")
+            
+        except Exception as e:
+            print(f"\n Exception during the experiment: {e}")
+            raise

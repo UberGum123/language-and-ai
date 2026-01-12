@@ -3,6 +3,7 @@ from src.reader import Reader
 import pandas as pd
 
 from src.model import Modeler
+from utils.data_saver import DatasetSaver
 
 # Parses user input on the experiment setup.
 # Accepts user input in a JSON schema 
@@ -47,11 +48,13 @@ class ExperimentEnvironment:
         filepath = self.config['data']['file_path']
         
         number_of_folds = self.config['preprocessing']['number_of_folds']
+        load_from_existing = self.config['load_dataset']
         reader = Reader(n_splits=number_of_folds)
         processed_dataset = reader.load_and_preprocess_csv(
             filepath,
             text_column=text_column,
-            label_column=label_column
+            label_column=label_column,
+            load_from_existing=load_from_existing
         )
         
         print(f"\n Data preprocessing complete.")
@@ -131,7 +134,7 @@ class ExperimentEnvironment:
             
             # Preprocess data (if modeling is enabled)
             processed_dataset = self.preprocess_data()
-            
+            DatasetSaver.save_dataset(processed_dataset, "cache/political_leaning.joblib")
             # Run modeling
             if processed_dataset is not None:
                 model = self.train_model(processed_dataset)

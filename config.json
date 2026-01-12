@@ -27,5 +27,6 @@
         "enabled": false,
         "get_descriptive_statistics_after_masking": false,
         "masking_strategy": 0
-    }
+    },
+    "load_dataset": false
 }

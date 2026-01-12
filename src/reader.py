@@ -13,6 +13,7 @@ from nltk.metrics import BigramAssocMeasures
 from nltk.probability import FreqDist
 from sklearn.model_selection import StratifiedKFold
 
+from utils.data_saver import DatasetSaver
 
 # Ensure NLTK resources are available
 nltk.download('punkt')
@@ -144,10 +145,12 @@ class Reader:
         csv_path,
         text_column,
         label_column,
+        load_from_existing
     ):
+        if load_from_existing:
+            return DatasetSaver.load_dataset("cache/political_leaning.joblib")
         df = pd.read_csv(csv_path)
         dataset = Dataset(df)
-
         # --------
         # Preprocessing
         # --------

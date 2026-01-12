@@ -39,11 +39,11 @@ class Reader:
 
     def __init__(
         self,
+        n_splits,
         min_freq=5,
         remove_stopwords=True,
         use_lemmatization=True,
         use_bigrams=False,
-        n_splits=5,
         random_state=42
     ):
         self.min_freq = min_freq
@@ -142,8 +142,8 @@ class Reader:
     def load_and_preprocess_csv(
         self,
         csv_path,
-        text_column='post',
-        label_column='political_leaning'
+        text_column,
+        label_column,
     ):
         df = pd.read_csv(csv_path)
         dataset = Dataset(df)

@@ -3,7 +3,7 @@ from sklearn.svm import LinearSVC
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, accuracy_score
 import numpy as np
-from reader import Reader
+from src.reader import Reader
 from sklearn.metrics import (
     f1_score,
     matthews_corrcoef,
@@ -11,7 +11,8 @@ from sklearn.metrics import (
     confusion_matrix
 )
 import pandas as pd
-from logger import Logger
+from src.logger import Logger
+from src.visualizations import Visualizer
 
 class Modeler:
     """ 
@@ -25,15 +26,32 @@ class Modeler:
     @staticmethod
     def train_svm(dataset, hyperparameters):
         logger = Logger(log_file="svm_training_results.log")
+        visualizer = Visualizer()
         
         label_encoder = LabelEncoder()
         label_encoder.fit(["left", "right", "center"])
         C = hyperparameters
         
         class_names = label_encoder.classes_
+        
+        # Track best configuration
+        best_config = {
+            'C': None,
+            'mean_macro_f1': 0,
+            'model': None,
+            'vectorizer': None
+        }
+        
         for c_value in C:
             logger.reset_stats()
             logger.log_configuration(f"SVM", {"C": c_value})
+            
+            #Auxillary stuff for visualizations
+            last_model = None
+            last_vectorizer = None
+            last_X_val = None
+            last_y_val = None
+            
             for fold in dataset.folds:
                 print(f"\nFold {fold['fold_id']}")
 
@@ -59,7 +77,7 @@ class Modeler:
                 clf = LinearSVC(
                     C=c_value,
                     class_weight="balanced",
-                    max_iter=None
+                    max_iter=10000
                 )
 
                 clf.fit(X_train_vec, y_train)
@@ -69,4 +87,55 @@ class Modeler:
                 logger.log_per_fold(fold['fold_id'], y_val, y_pred, class_names)
                 
             logger.log_overall_performance(class_names)
+            
+            mean_macro_f1 = np.mean(logger.macro_f1_scores)
+            
+            if mean_macro_f1 > best_config['mean_macro_f1']:
+                best_config['C'] = c_value
+                best_config['mean_macro_f1'] = mean_macro_f1
+                best_config['model'] = last_model
+                best_config['vectorizer'] = last_vectorizer
+            # Generate visualizations for this C value
+            if visualizer:
+                print(f"\n{'='*60}")
+                print(f"GENERATING VISUALIZATIONS FOR C={c_value}")
+                print(f"{'='*60}\n")
+                
+                # 1. Mean Confusion Matrix
+                mean_cm = np.mean(logger.confusion_matrices, axis=0)
+                visualizer.plot_confusion_matrix(
+                    mean_cm, 
+                    class_names, 
+                    title=f'Mean Confusion Matrix (C={c_value})'
+                )
+                
+                # 2. Metrics Summary
+                metrics_dict = {
+                    'Macro F1': logger.macro_f1_scores,
+                    'Weighted F1': logger.weighted_f1_scores,
+                    'MCC': logger.mcc_scores,
+                    'Accuracy': logger.fold_accuracies
+                }
+                visualizer.plot_metrics_summary(
+                    metrics_dict, 
+                    title=f"Metrics Across Folds (C={c_value})"
+                )
+                
+                # 3. Top Features
+                visualizer.plot_top_features(
+                    last_vectorizer,
+                    last_model,
+                    class_names,
+                    top_n=15
+                )
+                
+                # 4. PCA Embeddings
+                visualizer.plot_pca_embeddings(
+                    last_X_val,
+                    last_y_val,
+                    class_names,
+                    title=f"PCA of Validation Set (C={c_value})"
+                )
+                
+        return best_config
 

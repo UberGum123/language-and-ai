@@ -1,41 +1,11 @@
-from descriptive_statistics import Descriptives
-from reader import Reader
+from src.descriptive_statistics import Descriptives
+from src.reader import Reader
 import pandas as pd
 
 from src.model import Modeler
 
 # Parses user input on the experiment setup.
-# Accepts user input in a JSON schema format    
-# {
-#     "data": {
-#         "file_path": "data/political_leaning.csv",
-#         "text_column": "post",
-#         "label_column": "political_leaning",
-#         "author_column": "author_id"
-#      },
-#     "descriptive_statistics": {
-#         "enabled": true,
-#         "plot_label_distribution": true,
-#         "word_count_per_label": true,
-#         "get_author_info": true,
-#         "get_top_n_words_per_label": n
-#      } ,
-#     "modeling": {
-#         "enabled": false
-#         "model_type": "SVM", "BERT"
-#         "hyperparameters": {
-#             "C": [0.1, 1, 10],
-#      },
-#     "preprocessing": {
-#         "number_of_folds": 5,
-#         "get_descriptive_statistics_after_preprocessing": true
-#      },
-#     "masking": {
-#         "enabled": false,
-#         "get_descriptive_statistics_after_masking": true,
-#         "masking_strategy": "entity_masking", "random_masking"
-#      }
-#}
+# Accepts user input in a JSON schema 
 
 class ExperimentEnvironment:
     """ Parses user configuration, sets up the experiment environment accordingly, and carries out the experiment. """
@@ -88,6 +58,7 @@ class ExperimentEnvironment:
         print(f"\n Data preprocessing complete.")
         if get_descriptive_stats_after_preprocessing:
             print("Outputting descriptive statistics for the processed data")
+            raise NotImplementedError("Descriptive statistics after preprocessing not yet implemented.")
             #TODO: Implement descriptive statistics for processed data
         return processed_dataset
             
@@ -148,29 +119,27 @@ class ExperimentEnvironment:
         
     def mask(self):
         #TODO: Implement masking based on config here, and also the masking functionality in the reader
-        pass
+        raise NotImplementedError("Masking not yet implemented.")
     
     def run(self):
         try:
             # Validate configuration
-            self.validate_config()
+            self.config_sanity_checks()
             print("Configuration is valid.")
             
-            # Load data
-            self.load_data()
-            
             # Run descriptive statistics on raw data
-            self.run_descriptive_statistics()
+            self.get_descriptive_stats()
             
             # Preprocess data (if modeling is enabled)
-            processed_dataset = self.run_preprocessing()
+            processed_dataset = self.preprocess_data()
             
             # Run modeling
             if processed_dataset is not None:
-                self.run_modeling(processed_dataset)
+                model = self.train_model(processed_dataset)
             
             # Run masking experiments
-            self.run_masking()
+            #TODO: implement the masking and uncomment below
+            #self.run_masking()
 
             print("EXPERIMENT COMPLETE")
             

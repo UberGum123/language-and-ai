@@ -42,8 +42,31 @@ class ExperimentEnvironment:
         self.dataset = None
     
     def config_sanity_checks(self):
-        #TODO: Implement sanity checks for the config here
-        pass
+        mandatory_fields = ['data', 'descriptive_statistics', 'modeling', 'preprocessing', 'masking']
+        for field in mandatory_fields:
+            if field not in self.config:
+                raise ValueError(f"Missing mandatory configuration field: {field}")
+        
+        mandatory_data_fields = ['file_path', 'text_column', 'label_column', 'author_column']
+        for field in mandatory_data_fields:
+            if field not in self.config['data']:
+                raise ValueError(f"Missing mandatory data configuration field: {field}")
+        
+        mandatory_descriptive_fields = ['enabled', 'plot_label_distribution', 'word_count_per_label', 'get_author_info', 'get_top_n_words_per_label']
+        for field in mandatory_descriptive_fields:
+            if field not in self.config['descriptive_statistics']:
+                raise ValueError(f"Missing mandatory descriptive statistics configuration field: {field}")
+        
+        mandatory_modeling_fields = ['enabled', 'model_type', 'hyperparameters']
+        for field in mandatory_modeling_fields:
+            if field not in self.config['modeling']:
+                raise ValueError(f"Missing mandatory modeling configuration field: {field}")
+    
+        mandatory_preprocessing_fields = ['number_of_folds', 'get_descriptive_statistics_after_preprocessing']
+        for field in mandatory_preprocessing_fields:
+            if field not in self.config['preprocessing']:
+                raise ValueError(f"Missing mandatory preprocessing configuration field: {field}")
+        
     
     def load_data(self):
         #TODO: Implement data loading based on config here,if not enabled: return. jsut load, no preprocessing yet

@@ -134,6 +134,6 @@ class Descriptives:
             
             return feature_names[top_idx]
 
-        printf(f'Top words right:\n{top_tfidf_terms("right", top_n)}')
-        printf(f'Top words center:\n{top_tfidf_terms("center", top_n)}')
-        printf(f'Top words left:\n{top_tfidf_terms("left", top_n)}')
+        print(f'Top words right:\n{top_tfidf_terms("right", top_n)}')
+        print(f'Top words center:\n{top_tfidf_terms("center", top_n)}')
+        print(f'Top words left:\n{top_tfidf_terms("left", top_n)}')

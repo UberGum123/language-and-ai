@@ -1,0 +1,32 @@
+{
+    "data": {
+        "file_path": "data/political_leaning.csv",
+        "text_column": "post",
+        "label_column": "political_leaning",
+        "author_column": "author_id"
+    },
+    "descriptive_statistics": {
+        "enabled": false,
+        "plot_label_distribution": true,
+        "word_count_per_label": true,
+        "get_author_info": true,
+        "get_top_n_words_per_label": 50
+    },
+    "modeling": {
+        "enabled": true,
+        "model_type": "SVM",
+        "hyperparameters": {
+            "C": [0.1, 0.25, 0.5, 1, 5, 10]
+        }
+    },
+    "preprocessing": {
+        "number_of_folds": 5,
+        "get_descriptive_statistics_after_preprocessing": false
+    },
+    "masking": {
+        "enabled": false,
+        "get_descriptive_statistics_after_masking": false,
+        "masking_strategy": 0
+    },
+    "load_dataset": false
+}

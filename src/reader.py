@@ -13,6 +13,7 @@ from nltk.metrics import BigramAssocMeasures
 from nltk.probability import FreqDist
 from sklearn.model_selection import StratifiedKFold
 
+from utils.data_saver import DatasetSaver
 
 # Ensure NLTK resources are available
 nltk.download('punkt')
@@ -39,11 +40,11 @@ class Reader:
 
     def __init__(
         self,
+        n_splits,
         min_freq=5,
         remove_stopwords=True,
         use_lemmatization=True,
         use_bigrams=False,
-        n_splits=5,
         random_state=42
     ):
         self.min_freq = min_freq
@@ -142,12 +143,15 @@ class Reader:
     def load_and_preprocess_csv(
         self,
         csv_path,
-        text_column='post',
-        label_column='political_leaning'
+        text_column,
+        label_column,
+        load_from_existing
     ):
+        if load_from_existing:
+            return DatasetSaver.load_dataset("cache/political_leaning.joblib")
         df = pd.read_csv(csv_path)
+        #df = df.truncate(after=1000)  # For testing purposes only (speed up)
         dataset = Dataset(df)
-
         # --------
         # Preprocessing
         # --------

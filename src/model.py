@@ -86,6 +86,11 @@ class Modeler:
 
                 logger.log_per_fold(fold['fold_id'], y_val, y_pred, class_names)
                 
+                last_model = clf
+                last_vectorizer = vectorizer
+                last_X_val = X_val_vec
+                last_y_val = y_val
+                
             logger.log_overall_performance(class_names)
             
             mean_macro_f1 = np.mean(logger.macro_f1_scores)
@@ -95,13 +100,14 @@ class Modeler:
                 best_config['mean_macro_f1'] = mean_macro_f1
                 best_config['model'] = last_model
                 best_config['vectorizer'] = last_vectorizer
+                
             # Generate visualizations for this C value
             if visualizer:
                 print(f"\n{'='*60}")
                 print(f"GENERATING VISUALIZATIONS FOR C={c_value}")
                 print(f"{'='*60}\n")
                 
-                # 1. Mean Confusion Matrix
+                # Mean Confusion Matrix
                 mean_cm = np.mean(logger.confusion_matrices, axis=0)
                 visualizer.plot_confusion_matrix(
                     mean_cm, 
@@ -109,7 +115,7 @@ class Modeler:
                     title=f'Mean Confusion Matrix (C={c_value})'
                 )
                 
-                # 2. Metrics Summary
+                # Metrics Summary
                 metrics_dict = {
                     'Macro F1': logger.macro_f1_scores,
                     'Weighted F1': logger.weighted_f1_scores,
@@ -121,7 +127,7 @@ class Modeler:
                     title=f"Metrics Across Folds (C={c_value})"
                 )
                 
-                # 3. Top Features
+                # Top Features
                 visualizer.plot_top_features(
                     last_vectorizer,
                     last_model,
@@ -129,7 +135,7 @@ class Modeler:
                     top_n=15
                 )
                 
-                # 4. PCA Embeddings
+                # PCA Embeddings
                 visualizer.plot_pca_embeddings(
                     last_X_val,
                     last_y_val,

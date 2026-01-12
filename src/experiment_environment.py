@@ -11,7 +11,6 @@ class ExperimentEnvironment:
     """ Parses user configuration, sets up the experiment environment accordingly, and carries out the experiment. """
     def __init__(self, config):
         self.config = config
-        self.dataset = None
         self.descriptive_stats = Descriptives()
     
     def config_sanity_checks(self):
@@ -102,8 +101,8 @@ class ExperimentEnvironment:
                 label_column,
                 get_top_n_words_per_label
             )
-    
-    def train_model(self):
+
+    def train_model(self, dataset):
         modelling_config = self.config['modeling']
         enabled = modelling_config['enabled']
         if not enabled:
@@ -111,7 +110,7 @@ class ExperimentEnvironment:
         model_type = modelling_config['model_type']
         hyperparameters = modelling_config['hyperparameters']
         if model_type == "SVM":
-            Modeler.train_svm(self.dataset, hyperparameters['C'])
+            return Modeler.train_svm(dataset, hyperparameters['C'])
         elif model_type == "BERT":
             raise NotImplementedError("BERT modeling not yet implemented.")
         else:

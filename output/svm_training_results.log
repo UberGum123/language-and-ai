@@ -1,0 +1,853 @@
+Experiment Log
+
+
+========================================
+Running Configuration: SVM
+Parameters: {'C': 0.1}
+========================================
+
+Fold 0
+Macro F1:0.7355
+Weighted F1:0.7394
+MCC:0.5990
+Accuracy:0.7393
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3750   565    725
+left       577  2066    273
+right      571   273   2647
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.77      0.74      0.75      5040
+        left       0.71      0.71      0.71      2916
+       right       0.73      0.76      0.74      3491
+
+    accuracy                           0.74     11447
+   macro avg       0.73      0.74      0.74     11447
+weighted avg       0.74      0.74      0.74     11447
+
+
+Fold 1
+Macro F1:0.7382
+Weighted F1:0.7418
+MCC:0.6020
+Accuracy:0.7417
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3799   519    722
+left       565  2088    262
+right      618   270   2603
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.76      0.75      0.76      5040
+        left       0.73      0.72      0.72      2915
+       right       0.73      0.75      0.74      3491
+
+    accuracy                           0.74     11446
+   macro avg       0.74      0.74      0.74     11446
+weighted avg       0.74      0.74      0.74     11446
+
+
+Fold 2
+Macro F1:0.7253
+Weighted F1:0.7296
+MCC:0.5839
+Accuracy:0.7294
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3714   552    774
+left       563  2040    312
+right      606   290   2595
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.76      0.74      0.75      5040
+        left       0.71      0.70      0.70      2915
+       right       0.70      0.74      0.72      3491
+
+    accuracy                           0.73     11446
+   macro avg       0.72      0.73      0.73     11446
+weighted avg       0.73      0.73      0.73     11446
+
+
+Fold 3
+Macro F1:0.7297
+Weighted F1:0.7344
+MCC:0.5909
+Accuracy:0.7343
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3760   579    701
+left       579  2040    296
+right      601   285   2605
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.76      0.75      0.75      5040
+        left       0.70      0.70      0.70      2915
+       right       0.72      0.75      0.73      3491
+
+    accuracy                           0.73     11446
+   macro avg       0.73      0.73      0.73     11446
+weighted avg       0.73      0.73      0.73     11446
+
+
+Fold 4
+Macro F1:0.7333
+Weighted F1:0.7376
+MCC:0.5957
+Accuracy:0.7376
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3780   555    706
+left       602  2045    268
+right      588   284   2618
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.76      0.75      0.76      5041
+        left       0.71      0.70      0.71      2915
+       right       0.73      0.75      0.74      3490
+
+    accuracy                           0.74     11446
+   macro avg       0.73      0.73      0.73     11446
+weighted avg       0.74      0.74      0.74     11446
+
+
+Cross-Validation Summary
+Mean Accuracy: 0.7365
+Std Accuracy:  0.0043
+
+Cross-Validation Summary for F1 and MCC
+Macro F1: 0.7324 +- 0.0045
+Weighted F1:0.7366 +- 0.0042
+MCC:0.5943 +- 0.0064
+
+Mean Confusion Matrix Across Folds
+(values are averages)
+        center    left   right
+center  3760.6   554.0   725.6
+left     577.2  2055.8   282.2
+right    596.8   280.4  2613.6
+
+
+========================================
+Running Configuration: SVM
+Parameters: {'C': 0.25}
+========================================
+
+Fold 0
+Macro F1:0.7554
+Weighted F1:0.7589
+MCC:0.6288
+Accuracy:0.7588
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3851   541    648
+left       524  2146    246
+right      550   252   2689
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.76      0.77      5040
+        left       0.73      0.74      0.73      2916
+       right       0.75      0.77      0.76      3491
+
+    accuracy                           0.76     11447
+   macro avg       0.75      0.76      0.76     11447
+weighted avg       0.76      0.76      0.76     11447
+
+
+Fold 1
+Macro F1:0.7518
+Weighted F1:0.7555
+MCC:0.6230
+Accuracy:0.7555
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3884   509    647
+left       534  2145    236
+right      595   278   2618
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.77      0.77      0.77      5040
+        left       0.73      0.74      0.73      2915
+       right       0.75      0.75      0.75      3491
+
+    accuracy                           0.76     11446
+   macro avg       0.75      0.75      0.75     11446
+weighted avg       0.76      0.76      0.76     11446
+
+
+Fold 2
+Macro F1:0.7462
+Weighted F1:0.7502
+MCC:0.6155
+Accuracy:0.7501
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3828   517    695
+left       523  2110    282
+right      569   274   2648
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.76      0.77      5040
+        left       0.73      0.72      0.73      2915
+       right       0.73      0.76      0.74      3491
+
+    accuracy                           0.75     11446
+   macro avg       0.75      0.75      0.75     11446
+weighted avg       0.75      0.75      0.75     11446
+
+
+Fold 3
+Macro F1:0.7491
+Weighted F1:0.7538
+MCC:0.6206
+Accuracy:0.7537
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3868   526    646
+left       539  2099    277
+right      553   278   2660
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.77      0.77      5040
+        left       0.72      0.72      0.72      2915
+       right       0.74      0.76      0.75      3491
+
+    accuracy                           0.75     11446
+   macro avg       0.75      0.75      0.75     11446
+weighted avg       0.75      0.75      0.75     11446
+
+
+Fold 4
+Macro F1:0.7528
+Weighted F1:0.7572
+MCC:0.6258
+Accuracy:0.7572
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3892   517    632
+left       544  2115    256
+right      558   272   2660
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.77      0.78      5041
+        left       0.73      0.73      0.73      2915
+       right       0.75      0.76      0.76      3490
+
+    accuracy                           0.76     11446
+   macro avg       0.75      0.75      0.75     11446
+weighted avg       0.76      0.76      0.76     11446
+
+
+Cross-Validation Summary
+Mean Accuracy: 0.7551
+Std Accuracy:  0.0030
+
+Cross-Validation Summary for F1 and MCC
+Macro F1: 0.7510 +- 0.0032
+Weighted F1:0.7551 +- 0.0030
+MCC:0.6227 +- 0.0046
+
+Mean Confusion Matrix Across Folds
+(values are averages)
+        center    left   right
+center  3864.6   522.0   653.6
+left     532.8  2123.0   259.4
+right    565.0   270.8  2655.0
+
+
+========================================
+Running Configuration: SVM
+Parameters: {'C': 0.5}
+========================================
+
+Fold 0
+Macro F1:0.7625
+Weighted F1:0.7659
+MCC:0.6396
+Accuracy:0.7658
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3889   520    631
+left       491  2173    252
+right      548   239   2704
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.79      0.77      0.78      5040
+        left       0.74      0.75      0.74      2916
+       right       0.75      0.77      0.76      3491
+
+    accuracy                           0.77     11447
+   macro avg       0.76      0.76      0.76     11447
+weighted avg       0.77      0.77      0.77     11447
+
+
+Fold 1
+Macro F1:0.7591
+Weighted F1:0.7627
+MCC:0.6339
+Accuracy:0.7627
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3929   489    622
+left       530  2159    226
+right      585   264   2642
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.78      0.78      5040
+        left       0.74      0.74      0.74      2915
+       right       0.76      0.76      0.76      3491
+
+    accuracy                           0.76     11446
+   macro avg       0.76      0.76      0.76     11446
+weighted avg       0.76      0.76      0.76     11446
+
+
+Fold 2
+Macro F1:0.7525
+Weighted F1:0.7571
+MCC:0.6260
+Accuracy:0.7570
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3872   516    652
+left       520  2115    280
+right      536   277   2678
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.79      0.77      0.78      5040
+        left       0.73      0.73      0.73      2915
+       right       0.74      0.77      0.75      3491
+
+    accuracy                           0.76     11446
+   macro avg       0.75      0.75      0.75     11446
+weighted avg       0.76      0.76      0.76     11446
+
+
+Fold 3
+Macro F1:0.7522
+Weighted F1:0.7573
+MCC:0.6259
+Accuracy:0.7573
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3908   512    620
+left       540  2104    271
+right      546   289   2656
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.78      0.78      5040
+        left       0.72      0.72      0.72      2915
+       right       0.75      0.76      0.75      3491
+
+    accuracy                           0.76     11446
+   macro avg       0.75      0.75      0.75     11446
+weighted avg       0.76      0.76      0.76     11446
+
+
+Fold 4
+Macro F1:0.7594
+Weighted F1:0.7642
+MCC:0.6363
+Accuracy:0.7643
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3951   489    601
+left       535  2113    267
+right      545   261   2684
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.79      0.78      0.78      5041
+        left       0.74      0.72      0.73      2915
+       right       0.76      0.77      0.76      3490
+
+    accuracy                           0.76     11446
+   macro avg       0.76      0.76      0.76     11446
+weighted avg       0.76      0.76      0.76     11446
+
+
+Cross-Validation Summary
+Mean Accuracy: 0.7614
+Std Accuracy:  0.0036
+
+Cross-Validation Summary for F1 and MCC
+Macro F1: 0.7572 +- 0.0041
+Weighted F1:0.7615 +- 0.0036
+MCC:0.6323 +- 0.0055
+
+Mean Confusion Matrix Across Folds
+(values are averages)
+        center    left   right
+center  3909.8   505.2   625.2
+left     523.2  2132.8   259.2
+right    552.0   266.0  2672.8
+
+
+========================================
+Running Configuration: SVM
+Parameters: {'C': 1}
+========================================
+
+Fold 0
+Macro F1:0.7635
+Weighted F1:0.7672
+MCC:0.6412
+Accuracy:0.7671
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3919   503    618
+left       488  2169    259
+right      559   239   2693
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.79      0.78      0.78      5040
+        left       0.75      0.74      0.74      2916
+       right       0.75      0.77      0.76      3491
+
+    accuracy                           0.77     11447
+   macro avg       0.76      0.76      0.76     11447
+weighted avg       0.77      0.77      0.77     11447
+
+
+Fold 1
+Macro F1:0.7610
+Weighted F1:0.7650
+MCC:0.6372
+Accuracy:0.7651
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3969   476    595
+left       531  2154    230
+right      593   264   2634
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.79      0.78      5040
+        left       0.74      0.74      0.74      2915
+       right       0.76      0.75      0.76      3491
+
+    accuracy                           0.77     11446
+   macro avg       0.76      0.76      0.76     11446
+weighted avg       0.76      0.77      0.76     11446
+
+
+Fold 2
+Macro F1:0.7524
+Weighted F1:0.7570
+MCC:0.6257
+Accuracy:0.7569
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3878   520    642
+left       524  2108    283
+right      548   265   2678
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.77      0.78      5040
+        left       0.73      0.72      0.73      2915
+       right       0.74      0.77      0.76      3491
+
+    accuracy                           0.76     11446
+   macro avg       0.75      0.75      0.75     11446
+weighted avg       0.76      0.76      0.76     11446
+
+
+Fold 3
+Macro F1:0.7512
+Weighted F1:0.7561
+MCC:0.6239
+Accuracy:0.7562
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3914   513    613
+left       545  2102    268
+right      571   281   2639
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.78      0.78      5040
+        left       0.73      0.72      0.72      2915
+       right       0.75      0.76      0.75      3491
+
+    accuracy                           0.76     11446
+   macro avg       0.75      0.75      0.75     11446
+weighted avg       0.76      0.76      0.76     11446
+
+
+Fold 4
+Macro F1:0.7587
+Weighted F1:0.7639
+MCC:0.6355
+Accuracy:0.7640
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3984   473    584
+left       534  2106    275
+right      566   269   2655
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.79      0.79      5041
+        left       0.74      0.72      0.73      2915
+       right       0.76      0.76      0.76      3490
+
+    accuracy                           0.76     11446
+   macro avg       0.76      0.76      0.76     11446
+weighted avg       0.76      0.76      0.76     11446
+
+
+Cross-Validation Summary
+Mean Accuracy: 0.7619
+Std Accuracy:  0.0045
+
+Cross-Validation Summary for F1 and MCC
+Macro F1: 0.7574 +- 0.0048
+Weighted F1:0.7618 +- 0.0044
+MCC:0.6327 +- 0.0068
+
+Mean Confusion Matrix Across Folds
+(values are averages)
+        center    left   right
+center  3932.8   497.0   610.4
+left     524.4  2127.8   263.0
+right    567.4   263.6  2659.8
+
+
+========================================
+Running Configuration: SVM
+Parameters: {'C': 5}
+========================================
+
+Fold 0
+Macro F1:0.7512
+Weighted F1:0.7551
+MCC:0.6224
+Accuracy:0.7551
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3883   497    660
+left       539  2113    264
+right      586   257   2648
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.78      0.77      0.77      5040
+        left       0.74      0.72      0.73      2916
+       right       0.74      0.76      0.75      3491
+
+    accuracy                           0.76     11447
+   macro avg       0.75      0.75      0.75     11447
+weighted avg       0.76      0.76      0.76     11447
+
+
+Fold 1
+Macro F1:0.7470
+Weighted F1:0.7518
+MCC:0.6165
+Accuracy:0.7521
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3942   497    601
+left       599  2069    247
+right      627   267   2597
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.76      0.78      0.77      5040
+        left       0.73      0.71      0.72      2915
+       right       0.75      0.74      0.75      3491
+
+    accuracy                           0.75     11446
+   macro avg       0.75      0.75      0.75     11446
+weighted avg       0.75      0.75      0.75     11446
+
+
+Fold 2
+Macro F1:0.7427
+Weighted F1:0.7480
+MCC:0.6113
+Accuracy:0.7482
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3885   521    634
+left       579  2036    300
+right      586   262   2643
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.77      0.77      0.77      5040
+        left       0.72      0.70      0.71      2915
+       right       0.74      0.76      0.75      3491
+
+    accuracy                           0.75     11446
+   macro avg       0.74      0.74      0.74     11446
+weighted avg       0.75      0.75      0.75     11446
+
+
+Fold 3
+Macro F1:0.7437
+Weighted F1:0.7490
+MCC:0.6125
+Accuracy:0.7492
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3913   524    603
+left       573  2060    282
+right      616   273   2602
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.77      0.78      0.77      5040
+        left       0.72      0.71      0.71      2915
+       right       0.75      0.75      0.75      3491
+
+    accuracy                           0.75     11446
+   macro avg       0.74      0.74      0.74     11446
+weighted avg       0.75      0.75      0.75     11446
+
+
+Fold 4
+Macro F1:0.7456
+Weighted F1:0.7513
+MCC:0.6158
+Accuracy:0.7516
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3966   480    595
+left       571  2056    288
+right      625   284   2581
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.77      0.79      0.78      5041
+        left       0.73      0.71      0.72      2915
+       right       0.75      0.74      0.74      3490
+
+    accuracy                           0.75     11446
+   macro avg       0.75      0.74      0.75     11446
+weighted avg       0.75      0.75      0.75     11446
+
+
+Cross-Validation Summary
+Mean Accuracy: 0.7512
+Std Accuracy:  0.0024
+
+Cross-Validation Summary for F1 and MCC
+Macro F1: 0.7460 +- 0.0030
+Weighted F1:0.7511 +- 0.0025
+MCC:0.6157 +- 0.0039
+
+Mean Confusion Matrix Across Folds
+(values are averages)
+        center    left   right
+center  3917.8   503.8   618.6
+left     572.2  2066.8   276.2
+right    608.0   268.6  2614.2
+
+
+========================================
+Running Configuration: SVM
+Parameters: {'C': 10}
+========================================
+
+Fold 0
+Macro F1:0.7456
+Weighted F1:0.7499
+MCC:0.6143
+Accuracy:0.7500
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3875   497    668
+left       548  2089    279
+right      603   267   2621
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.77      0.77      0.77      5040
+        left       0.73      0.72      0.72      2916
+       right       0.73      0.75      0.74      3491
+
+    accuracy                           0.75     11447
+   macro avg       0.75      0.75      0.75     11447
+weighted avg       0.75      0.75      0.75     11447
+
+
+Fold 1
+Macro F1:0.7414
+Weighted F1:0.7462
+MCC:0.6078
+Accuracy:0.7465
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3914   514    612
+left       611  2049    255
+right      643   267   2581
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.76      0.78      0.77      5040
+        left       0.72      0.70      0.71      2915
+       right       0.75      0.74      0.74      3491
+
+    accuracy                           0.75     11446
+   macro avg       0.74      0.74      0.74     11446
+weighted avg       0.75      0.75      0.75     11446
+
+
+Fold 2
+Macro F1:0.7379
+Weighted F1:0.7434
+MCC:0.6041
+Accuracy:0.7437
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3877   518    645
+left       596  2011    308
+right      603   264   2624
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.76      0.77      0.77      5040
+        left       0.72      0.69      0.70      2915
+       right       0.73      0.75      0.74      3491
+
+    accuracy                           0.74     11446
+   macro avg       0.74      0.74      0.74     11446
+weighted avg       0.74      0.74      0.74     11446
+
+
+Fold 3
+Macro F1:0.7390
+Weighted F1:0.7446
+MCC:0.6055
+Accuracy:0.7448
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3911   522    607
+left       585  2043    287
+right      637   283   2571
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.76      0.78      0.77      5040
+        left       0.72      0.70      0.71      2915
+       right       0.74      0.74      0.74      3491
+
+    accuracy                           0.74     11446
+   macro avg       0.74      0.74      0.74     11446
+weighted avg       0.74      0.74      0.74     11446
+
+
+Fold 4
+Macro F1:0.7405
+Weighted F1:0.7466
+MCC:0.6085
+Accuracy:0.7470
+
+ Confusion Matrix (rows=true, cols=pred):
+        center  left  right
+center    3958   481    602
+left       590  2028    297
+right      638   288   2564
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      center       0.76      0.79      0.77      5041
+        left       0.73      0.70      0.71      2915
+       right       0.74      0.73      0.74      3490
+
+    accuracy                           0.75     11446
+   macro avg       0.74      0.74      0.74     11446
+weighted avg       0.75      0.75      0.75     11446
+
+
+Cross-Validation Summary
+Mean Accuracy: 0.7464
+Std Accuracy:  0.0022
+
+Cross-Validation Summary for F1 and MCC
+Macro F1: 0.7409 +- 0.0026
+Weighted F1:0.7462 +- 0.0022
+MCC:0.6080 +- 0.0035
+
+Mean Confusion Matrix Across Folds
+(values are averages)
+        center    left   right
+center  3907.0   506.4   626.8
+left     586.0  2044.0   285.2
+right    624.8   273.8  2592.2

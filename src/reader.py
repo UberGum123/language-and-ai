@@ -11,7 +11,7 @@ from nltk.stem import WordNetLemmatizer
 from nltk.collocations import BigramCollocationFinder
 from nltk.metrics import BigramAssocMeasures
 from nltk.probability import FreqDist
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedGroupKFold
 
 from utils.data_saver import DatasetSaver
 
@@ -145,13 +145,22 @@ class Reader:
         csv_path,
         text_column,
         label_column,
+        author_column,
         load_from_existing
     ):
         if load_from_existing:
             return DatasetSaver.load_dataset("cache/political_leaning.joblib")
+
         df = pd.read_csv(csv_path)
-        #df = df.truncate(after=1000)  # For testing purposes only (speed up)
+
+        # --------
+        # CAP POSTS PER AUTHOR
+        # --------
+        max_posts_per_author = 97
+        df = df.groupby(author_column, group_keys=False).head(max_posts_per_author) # keep only the top posts
+
         dataset = Dataset(df)
+        
         # --------
         # Preprocessing
         # --------
@@ -170,18 +179,19 @@ class Reader:
             dataset.bigrams = self._extract_bigrams(dataset.processed)
 
         # --------
-        # Stratified K-Fold CV
+        # Stratified K-Fold CV (author-level, no crossover)
         # --------
         X = dataset.processed
         y = df[label_column].tolist()
+        groups = df[author_column].tolist()  # group by author
 
-        skf = StratifiedKFold(
+        sgkf = StratifiedGroupKFold(
             n_splits=self.n_splits,
             shuffle=True,
             random_state=self.random_state
         )
 
-        for fold_id, (train_idx, val_idx) in enumerate(skf.split(X, y)):
+        for fold_id, (train_idx, val_idx) in enumerate(sgkf.split(X, y, groups)):
             fold = {
                 "fold_id": fold_id,
                 "train": [X[i] for i in train_idx],

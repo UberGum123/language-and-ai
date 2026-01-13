@@ -7,4 +7,7 @@ sklearn==1.8.0
 nltk==3.8.1
 contractions==0.1.73
 pandarallel==1.6.5
-seaborn ==  0.13.2
+seaborn==0.13.2
+geonamescache==3.0.0
+torch==2.9.1
+transformers==4.57.5

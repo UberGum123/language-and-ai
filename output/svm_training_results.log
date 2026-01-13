@@ -31,14 +31,24 @@ weighted avg       0.74      0.74      0.74     11447
 
 
 Fold 1
+<<<<<<< Updated upstream
 Macro F1:0.7382
 Weighted F1:0.7418
 MCC:0.6020
+=======
+Macro F1:0.7381
+Weighted F1:0.7417
+MCC:0.6018
+>>>>>>> Stashed changes
 Accuracy:0.7417
 
  Confusion Matrix (rows=true, cols=pred):
         center  left  right
+<<<<<<< Updated upstream
 center    3799   519    722
+=======
+center    3798   520    722
+>>>>>>> Stashed changes
 left       565  2088    262
 right      618   270   2603
 
@@ -132,13 +142,22 @@ Std Accuracy:  0.0043
 
 Cross-Validation Summary for F1 and MCC
 Macro F1: 0.7324 +- 0.0045
+<<<<<<< Updated upstream
 Weighted F1:0.7366 +- 0.0042
 MCC:0.5943 +- 0.0064
+=======
+Weighted F1:0.7365 +- 0.0042
+MCC:0.5943 +- 0.0063
+>>>>>>> Stashed changes
 
 Mean Confusion Matrix Across Folds
 (values are averages)
         center    left   right
+<<<<<<< Updated upstream
 center  3760.6   554.0   725.6
+=======
+center  3760.4   554.2   725.6
+>>>>>>> Stashed changes
 left     577.2  2055.8   282.2
 right    596.8   280.4  2613.6
 

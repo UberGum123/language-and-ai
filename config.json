@@ -13,7 +13,7 @@
         "get_top_n_words_per_label": 50
     },
     "modeling": {
-        "enabled": true,
+        "enabled": false,
         "model_type": "BERT",
         "hyperparameters": {
             "model_name": "bert-base-uncased",
@@ -29,9 +29,9 @@
         "get_descriptive_statistics_after_preprocessing": false
     },
     "masking": {
-        "enabled": false,
+        "enabled": true,
         "get_descriptive_statistics_after_masking": false,
-        "masking_strategy": 0
+        "masking_strategy": 4
     },
     "load_dataset": true
 }

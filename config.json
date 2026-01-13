@@ -3,7 +3,7 @@
         "file_path": "data/political_leaning.csv",
         "text_column": "post",
         "label_column": "political_leaning",
-        "author_column": "author_id"
+        "author_column": "auhtor_ID"
     },
     "descriptive_statistics": {
         "enabled": false,
@@ -14,10 +14,15 @@
     },
     "modeling": {
         "enabled": true,
-        "model_type": "SVM",
+        "model_type": "BERT",
         "hyperparameters": {
-            "C": [0.1, 0.25, 0.5, 1, 5, 10]
-        }
+            "model_name": "bert-base-uncased",
+            "learning_rate": 1e-5,
+            "epochs": 3,
+            "batch_size": 4,
+            "max_length": 128
+        },
+        "enable_visualizations": true
     },
     "preprocessing": {
         "number_of_folds": 5,
@@ -28,5 +33,5 @@
         "get_descriptive_statistics_after_masking": false,
         "masking_strategy": 0
     },
-    "load_dataset": false
+    "load_dataset": true
 }

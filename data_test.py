@@ -1,5 +1,5 @@
 # Example usage of the reader.py file
-from reader import Reader
+from src.reader import Reader
 
 # Initialize the Reader
 reader = Reader(n_splits=5)

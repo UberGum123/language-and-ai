@@ -107,14 +107,22 @@ class ExperimentEnvironment:
     def train_model(self, dataset):
         modelling_config = self.config['modeling']
         enabled = modelling_config['enabled']
+        enable_vis = modelling_config.get('enable_visualizations')
         if not enabled:
             return
         model_type = modelling_config['model_type']
         hyperparameters = modelling_config['hyperparameters']
         if model_type == "SVM":
             return Modeler.train_svm(dataset, hyperparameters['C'])
-        elif model_type == "BERT":
-            raise NotImplementedError("BERT modeling not yet implemented.")
+        elif model_type == 'BERT':
+            hyperparams = modelling_config.get('hyperparameters', {})
+            print(f"Training BERT with hyperparameters: {hyperparams}")
+            
+            self.best_model_info = Modeler.train_bert(
+                dataset,
+                hyperparams,
+                enable_visualizations=enable_vis
+            )
         else:
             raise ValueError(f"Wrong model type: {model_type}, choose between SVM and BERT")
         

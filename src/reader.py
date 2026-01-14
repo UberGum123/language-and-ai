@@ -202,3 +202,51 @@ class Reader:
             dataset.folds.append(fold)
 
         return dataset
+    
+    def load_and_preprocess_for_bert(self, csv_path, text_column, label_column, text_pair_column=None):
+        """
+        Preprocessing for BERT (Uncased) based on Section 3 of Devlin et al. (2018).
+        
+        Args:
+            text_pair_column (str): Optional. The column name for the second sentence 
+                                    if the task involves sentence pairs (e.g., Q&A, Entailment).
+        """
+        df = pd.read_csv(csv_path)
+        
+        # Helper to normalize text for uncased BERT
+        def clean_text_for_uncased(text):
+            if pd.isna(text): return ""
+            text = str(text).lower()
+            # Remove accents (NFD normalization splits characters from accents)
+            text = ''.join(c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn')
+            return text
+
+        # Apply normalization
+        df[text_column] = df[text_column].apply(clean_text_for_uncased)
+        dataset = Dataset(df)
+
+        if text_pair_column:
+            df[text_pair_column] = df[text_pair_column].apply(clean_text_for_uncased)
+            # Store tuple of (text_a, text_b)
+            dataset.processed = list(zip(df[text_column].tolist(), df[text_pair_column].tolist()))
+        else:
+            # Store simple list of strings
+            dataset.processed = df[text_column].tolist()
+                
+        # Create stratified folds
+        X = dataset.processed
+        y = df[label_column].tolist()
+        
+        skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=self.random_state)
+        
+        for fold_id, (train_idx, val_idx) in enumerate(skf.split(X, y)):
+            fold = {
+                "fold_id": fold_id,
+                "train": [X[i] for i in train_idx],  
+                "val": [X[i] for i in val_idx],      
+                "train_labels": [y[i] for i in train_idx],
+                "val_labels": [y[i] for i in val_idx]
+            }
+            dataset.folds.append(fold)
+        
+        return dataset

@@ -56,14 +56,21 @@ class ExperimentEnvironment:
         number_of_folds = self.config['preprocessing']['number_of_folds']
         load_from_existing = self.config['load_dataset']
         reader = Reader(n_splits=number_of_folds)
-        processed_dataset = reader.load_and_preprocess_csv(
-            filepath,
-            text_column=text_column,
-            label_column=label_column,
-            author_column=author_column,
-            load_from_existing=load_from_existing
-        )
-        
+        if self.config["modeling"]["model_type"] == "SVM":
+            processed_dataset = reader.load_and_preprocess_csv(
+                filepath,
+                text_column=text_column,
+                label_column=label_column,
+                load_from_existing=load_from_existing
+            )
+        elif self.config["modeling"]["model_type"] == "BERT":
+            processed_dataset = reader.load_and_preprocess_for_bert(
+                filepath,
+                text_column=text_column,
+                label_column=label_column
+            )
+        else:
+            raise ValueError(f"Wrong model type: {self.config['modeling']['model_type']}, choose between SVM and BERT")
         print(f"\n Data preprocessing complete.")
         if get_descriptive_stats_after_preprocessing:
             print("Outputting descriptive statistics for the processed data")

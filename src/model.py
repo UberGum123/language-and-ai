@@ -24,40 +24,23 @@ from transformers import (
 )
 from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import Dataset as TorchDataset
+import gc
 
 class TokenListDataset(TorchDataset):
     """
     PyTorch Dataset that converts token lists to BERT input.
     """
-    def __init__(self, token_lists, labels, tokenizer, max_length=128):
-
-        self.token_lists = token_lists
+    def __init__(self, encodings, labels):
+        self.encodings = encodings
         self.labels = labels
-        self.tokenizer = tokenizer
-        self.max_length = max_length
-    
-    def __len__(self):
-        return len(self.token_lists)
-    
+
     def __getitem__(self, idx):
-        # Convert token list back to string (space-separated)
-        text = ' '.join(self.token_lists[idx])
-        
-        # Tokenize with BERT tokenizer
-        encoding = self.tokenizer(
-            text,
-            add_special_tokens=True,
-            max_length=self.max_length,
-            padding='max_length',
-            truncation=True,
-            return_tensors='pt'
-        )
-        
-        return {
-            'input_ids': encoding['input_ids'].flatten(),
-            'attention_mask': encoding['attention_mask'].flatten(),
-            'labels': torch.tensor(self.labels[idx], dtype=torch.long)
-        }
+        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
+        item['labels'] = torch.tensor(self.labels[idx], dtype=torch.long)
+        return item
+
+    def __len__(self):
+        return len(self.labels)
 
 
 def compute_metrics(eval_pred):
@@ -208,59 +191,58 @@ class Modeler:
 
     @staticmethod
     def train_bert(dataset, hyperparameters, enable_visualizations=True):
-
         print("Starting BERT training...")
         
         logger = Logger(log_file="bert_training_results.log")
         visualizer = Visualizer() if enable_visualizations else None
         
-        # Extract hyperparameters
         model_name = hyperparameters.get('model_name', 'bert-base-uncased')
         learning_rate = hyperparameters.get('learning_rate', 2e-5)
         epochs = hyperparameters.get('epochs', 3)
         batch_size = hyperparameters.get('batch_size', 16)
         max_length = hyperparameters.get('max_length', 128)
         
-        print(f"Model: {model_name}")
-        print(f"Learning rate: {learning_rate}")
-        print(f"Epochs: {epochs}")
-        print(f"Batch size: {batch_size}")
-        print(f"Max length: {max_length}\n")
-        
-        # Initialize tokenizer
         tokenizer = BertTokenizer.from_pretrained(model_name)
-        
-        # Label encoding
         label_encoder = LabelEncoder()
         label_encoder.fit(["left", "right", "center"])
         class_names = label_encoder.classes_
         
         logger.log_configuration("BERT", hyperparameters)
         
-        # Train on each fold
         for fold in dataset.folds:
-            print(f"Fold {fold['fold_id']}")
-  
-            # Get token lists
-            X_train = fold["train"]  # List of token lists
-            X_val = fold["val"]
+            print(f"\nFold {fold['fold_id']}")
+            # 1. RAW DATA
+            X_train_raw = fold["train"] 
+            X_val_raw = fold["val"]
+            
+            # 2. Performance optimization: we only tokenize once per fold
+            print("Tokenizing data...")
+            train_encodings = tokenizer(
+                X_train_raw, 
+                truncation=True, 
+                padding=True, 
+                max_length=max_length
+            )
+            val_encodings = tokenizer(
+                X_val_raw, 
+                truncation=True, 
+                padding=True, 
+                max_length=max_length
+            )
+
             y_train = label_encoder.transform(fold["train_labels"])
             y_val = label_encoder.transform(fold["val_labels"])
             
-            print(f"Train samples: {len(X_train)}")
-            print(f"Val samples: {len(X_val)}")
-            
-            # Create datasets
-            train_dataset = TokenListDataset(X_train, y_train, tokenizer, max_length)
-            val_dataset = TokenListDataset(X_val, y_val, tokenizer, max_length)
-            
-            # Initialize model
+            # 3. USE OPTIMIZED DATASET
+            train_dataset = TokenListDataset(train_encodings, y_train)
+            val_dataset = TokenListDataset(val_encodings, y_val)
+
+            # Initialize model (Fresh for every fold)
             model = BertForSequenceClassification.from_pretrained(
                 model_name,
                 num_labels=len(class_names)
             )
             
-            # Training arguments
             training_args = TrainingArguments(
                 output_dir=f'./results/bert_fold_{fold["fold_id"]}',
                 num_train_epochs=epochs,
@@ -273,12 +255,13 @@ class Modeler:
                 load_best_model_at_end=True,
                 metric_for_best_model="f1_macro",
                 logging_dir=f'./logs/bert_fold_{fold["fold_id"]}',
-                logging_steps=100,
-                save_total_limit=2,
-                report_to="none" 
+                logging_steps=50,
+                save_total_limit=1, # Save space
+                report_to="none",
+                # Add these for speed/memory if using a modern GPU:
+                fp16=torch.cuda.is_available(), 
             )
             
-            # Trainer
             trainer = Trainer(
                 model=model,
                 args=training_args,
@@ -288,17 +271,19 @@ class Modeler:
                 callbacks=[EarlyStoppingCallback(early_stopping_patience=2)]
             )
             
-            # Train
-            print(f"\nTraining BERT on fold {fold['fold_id']}...")
             trainer.train()
             
-            # Evaluate
-            print(f"\nEvaluating on validation set...")
+            print(f"Evaluating fold {fold['fold_id']}...")
             predictions = trainer.predict(val_dataset)
             y_pred = np.argmax(predictions.predictions, axis=1)
             
-            # Log metrics
             logger.log_per_fold(fold['fold_id'], y_val, y_pred, class_names)
+            
+            # 4. MEMORY CLEANUP 
+            del model
+            del trainer
+            torch.cuda.empty_cache()
+            gc.collect()
         
         # Overall performance
         logger.log_overall_performance(class_names)

@@ -36,6 +36,7 @@ class Visualizer:
         plt.ylabel('True Label')
         plt.xlabel('Predicted Label')
         plt.tight_layout()
+        plt.savefig(f"output/{title}.png")
         plt.show()
         
     def plot_metrics_summary(self, metrics_dict, title):

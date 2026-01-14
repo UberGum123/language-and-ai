@@ -1,5 +1,6 @@
 from src.descriptive_statistics import Descriptives
 from src.reader import Reader
+from src.reader import Dataset
 import pandas as pd
 import re
 import geonamescache
@@ -131,7 +132,15 @@ class ExperimentEnvironment:
         else:
             raise ValueError(f"Wrong model type: {model_type}, choose between SVM and BERT")
         
-    def mask(self, dataset: pd.DataFrame) -> pd.DataFrame:
+    def mask(self, dataset) -> Dataset:
+        """
+        Masks tokens from the preprocessed dataset based on the masking strategy.
+        Strategy levels are cumulative:
+            1: Remove ideology/party keywords
+            2: Remove political figures
+            3: Remove political words/phrases
+            4: Remove locations (countries and cities)
+        """
         print('Masking data')
         masking_config = self.config['masking']
 
@@ -140,14 +149,12 @@ class ExperimentEnvironment:
             return dataset
 
         strategy = masking_config.get('masking_strategy', 0)
-        text_column = self.config['data']['text_column']
-
         print(f"Applying masking strategy: {strategy}")
 
         # Ideology/party keywords
-        regex_keywords_pattern = r"\b(?:" \
+        regex_keywords_pattern = r"^(?:" \
             r"cons|conser|conserv|conservative|" \
-            r"lib|liber|liberal|liberter|" \
+            r"lib|liber|liberal|libertarian|" \
             r"prog|progressive|" \
             r"leftist|lefty|left[-\s]?wing|" \
             r"righty|right[-\s]?wing|" \
@@ -156,97 +163,104 @@ class ExperimentEnvironment:
             r"dem|demo|democrat|democrats|democratic|" \
             r"repub|republican|republicans|" \
             r"gop|dnc" \
-            r")\b"
+            r")$"
 
-        regex_keywords = re.compile(regex_keywords_pattern)
+        regex_keywords = re.compile(regex_keywords_pattern, re.IGNORECASE)
 
         # Political figures (with optional first names)
-        regex_figures_pattern = r"\b(?:" \
-            r"(?:donald )?trump|" \
-            r"(?:joe )?biden|" \
-            r"(?:barack )?obama|" \
-            r"(?:george w\. )?bush|" \
-            r"(?:bill )?clinton|" \
-            r"(?:hillary )?clinton|" \
-            r"(?:kamala )?harris|" \
-            r"(?:mike )?pence|" \
-            r"(?:bernie )?sanders|" \
-            r"(?:alexandria ocasio-)?cortez|aoc|" \
-            r"(?:nancy )?pelosi|" \
-            r"(?:mitch )?mcconnell|" \
-            r"(?:boris )?johnson|" \
-            r"(?:theresa )?may|" \
-            r"(?:rishi )?sunak|" \
-            r"(?:keir )?starmer|" \
-            r"(?:vladimir )?putin|" \
-            r"(?:xi )?jinping|" \
-            r"(?:narendra )?modi|" \
-            r"(?:emmanuel )?macron|" \
-            r"(?:angela )?merkel|" \
-            r"(?:justin )?trudeau|" \
-            r"(?:jair )?bolsonaro|" \
-            r"(?:recep tayyip )?erdogan|" \
-            r"(?:scott )?morrison|" \
-            r"(?:jacinda )?ardern" \
-            r")\b"
+        regex_figures_pattern = r"^(?:" \
+            r"trump|donald|" \
+            r"biden|joe|" \
+            r"obama|barack|" \
+            r"bush|george|" \
+            r"clinton|bill|hillary|" \
+            r"harris|kamala|" \
+            r"pence|mike|" \
+            r"sanders|bernie|" \
+            r"cortez|alexandria|ocasio-cortez|aoc|" \
+            r"pelosi|nancy|" \
+            r"mcconnell|mitch|" \
+            r"johnson|boris|" \
+            r"may|theresa|" \
+            r"sunak|rishi|" \
+            r"starmer|keir|" \
+            r"putin|vladimir|" \
+            r"jinping|xi|" \
+            r"modi|narendra|" \
+            r"macron|emmanuel|" \
+            r"merkel|angela|" \
+            r"trudeau|justin|" \
+            r"bolsonaro|jair|" \
+            r"erdogan|recep|tayyip|" \
+            r"morrison|scott|" \
+            r"ardern|jacinda" \
+            r")$"
 
-        regex_figures = re.compile(regex_figures_pattern)
+        regex_figures = re.compile(regex_figures_pattern, re.IGNORECASE)
 
         # Other political words / phrases
-        regex_political_words_pattern = r"\b(?:" \
+        regex_political_words_pattern = r"^(?:" \
             r"abortion|guns|immigration|taxes|healthcare|" \
             r"medicare|medicaid|climate|environment|protest|" \
             r"democracy|socialism|capitalism|freedom|rights|" \
             r"marriage|equality|vote|voting|election|" \
             r"police|crime|war|military|maga|woke|" \
-            r"libtard|snowflake|commie|social justice warrior|sjw|" \
-            r"redneck|redpill|gay|trans|queer|immigrant" \
-            r"beta male|soyboy|cuck|karen|" \
-            r"FBI|FSB|KGB|ICE|CIA|IDF" \
-            r")\b"
+            r"libtard|snowflake|commie|sjw|" \
+            r"redneck|redpill|gay|trans|queer|immigrant|" \
+            r"soyboy|cuck|karen|" \
+            r"fbi|fsb|kgb|ice|cia|idf" \
+            r")$"
 
-        regex_political_words = re.compile(regex_political_words_pattern)
+        regex_political_words = re.compile(regex_political_words_pattern, re.IGNORECASE)
 
+        # Locations
         gc = geonamescache.GeonamesCache()
         countries = set([c['name'].lower() for c in gc.get_countries().values()])
         cities = set([c['name'].lower() for c in gc.get_cities().values()])
 
-        def mask_string(text: str) -> str:
-            if not isinstance(text, str):
-                return text
+        def mask_tokens(tokens: list) -> list:
+            """Filter out tokens based on the masking strategy using regex."""
+            if not isinstance(tokens, list):
+                return tokens
 
-            # Strategy 1+: remove ideology keywords
-            if strategy >= 1:
-                text = regex_keywords.sub("", text)
+            masked = []
+            for token in tokens:
+                # Strategy 1+: remove ideology keywords
+                if strategy >= 1 and regex_keywords.match(token):
+                    continue
 
-            # Strategy 2+: remove political figures
-            if strategy >= 2:
-                text = regex_figures.sub("", text)
+                # Strategy 2+: remove political figures
+                if strategy >= 2 and regex_figures.match(token):
+                    continue
 
-            # Strategy 3+: remove political words / phrases
-            if strategy >= 3:
-                text = regex_political_words.sub("", text)
+                # Strategy 3+: remove political words/phrases
+                if strategy >= 3 and regex_political_words.match(token):
+                    continue
 
-            # Strategy 4+: remove locations
-            if strategy >= 4:
-                tokens = text.split()
-                tokens = [w for w in tokens if w.lower() not in countries and w.lower() not in cities]
-                text = " ".join(tokens)
+                # Strategy 4+: remove locations
+                if strategy >= 4 and (token.lower() in countries or token.lower() in cities):
+                    continue
 
-            # Remove extra spaces left by deletions
-            text = re.sub(r"\s+", " ", text).strip()
+                masked.append(token)
 
-            return text
+            return masked
 
-        dataset.df[text_column] = (
-        dataset.df[text_column].astype(str).apply(mask_string)
-        )
+        # Mask the processed tokens in the dataset
+        dataset.processed = [mask_tokens(doc) for doc in dataset.processed]
+
+        # Also update the folds so training uses masked data
+        for fold in dataset.folds:
+            fold['train'] = [mask_tokens(doc) for doc in fold['train']]
+            fold['val'] = [mask_tokens(doc) for doc in fold['val']]
+
+        # Update the dataframe column as well
+        if 'processed' in dataset.df.columns:
+            dataset.df['processed'] = dataset.processed
 
         if masking_config.get('get_descriptive_statistics_after_masking', False):
             print("Descriptive statistics after masking not implemented yet.")
 
         print("Masking complete")
-
         return dataset
     
     def run(self):
@@ -272,6 +286,7 @@ class ExperimentEnvironment:
             
             # Run masking based on the integer code defined in the config json file
             masked_dataset = self.mask(processed_dataset)
+            print('Masked dataset head:\n' , masked_dataset.df.head())
             # DatasetSaver.save_dataset(masked_dataset, "cache/preprocessed_masked.joblib")
 
             if masked_dataset is not None:

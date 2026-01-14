@@ -213,15 +213,16 @@ class Reader:
 
         # Apply normalization
         df[text_column] = df[text_column].apply(clean_text_for_uncased)
-        
+        dataset = Dataset(df)
+
         if text_pair_column:
             df[text_pair_column] = df[text_pair_column].apply(clean_text_for_uncased)
+            # Store tuple of (text_a, text_b)
             dataset.processed = list(zip(df[text_column].tolist(), df[text_pair_column].tolist()))
         else:
+            # Store simple list of strings
             dataset.processed = df[text_column].tolist()
-        
-        dataset = Dataset(df) 
-        
+                
         # Create stratified folds
         X = dataset.processed
         y = df[label_column].tolist()

@@ -1,6 +1,10 @@
 from src.descriptive_statistics import Descriptives
 from src.reader import Reader
+from src.reader import Dataset
 import pandas as pd
+import re
+import geonamescache
+
 
 from src.model import Modeler
 from utils.data_saver import DatasetSaver
@@ -46,6 +50,7 @@ class ExperimentEnvironment:
         get_descriptive_stats_after_preprocessing = self.config['preprocessing']['get_descriptive_statistics_after_preprocessing']
         text_column = self.config['data']['text_column']
         label_column = self.config['data']['label_column']
+        author_column = self.config['data']['author_column']
         filepath = self.config['data']['file_path']
         
         number_of_folds = self.config['preprocessing']['number_of_folds']
@@ -134,9 +139,136 @@ class ExperimentEnvironment:
         else:
             raise ValueError(f"Wrong model type: {model_type}, choose between SVM and BERT")
         
-    def mask(self):
-        #TODO: Implement masking based on config here, and also the masking functionality in the reader
-        raise NotImplementedError("Masking not yet implemented.")
+    def mask(self, dataset) -> Dataset:
+        """
+        Masks tokens from the preprocessed dataset based on the masking strategy.
+        Strategy levels are cumulative:
+            1: Remove ideology/party keywords
+            2: Remove political figures
+            3: Remove political words/phrases
+            4: Remove locations (countries and cities)
+        """
+        print('Masking data')
+        masking_config = self.config['masking']
+
+        if not masking_config.get('enabled', False):
+            print("Masking disabled, returning dataset unchanged.")
+            return dataset
+
+        strategy = masking_config.get('masking_strategy', 0)
+        print(f"Applying masking strategy: {strategy}")
+
+        # Ideology/party keywords
+        regex_keywords_pattern = r"^(?:" \
+            r"cons|conser|conserv|conservative|" \
+            r"lib(?:eral|ertarian|center|left|right|\w{0,3})|dem(?:ocrat|ocrats|s|\w{0,3})" \
+            r"prog|progressive|" \
+            r"center|centre| center(?:left|right)?|centre(?:left|right)?|centrist|centrism|moderate(?:s|ly)" \
+            r"leftist|lefty|left[-\s]?wing|" \
+            r"righty|right[-\s]?wing|" \
+            r"far[-\s]?(left|right)|alt[-\s]?(right|left)|" \
+            r"libertarian|centrist|moderate|socialist|anarchist|communist|marxist|" \
+            r"repub|republican|republicans|" \
+            r"gop|dnc" \
+            r")$"
+
+        regex_keywords = re.compile(regex_keywords_pattern, re.IGNORECASE)
+
+        # Political figures (with optional first names)
+        regex_figures_pattern = r"^(?:" \
+            r"trump|donald|" \
+            r"biden|joe|" \
+            r"obama|barack|" \
+            r"bush|george|" \
+            r"clinton|bill|hillary|" \
+            r"harris|kamala|" \
+            r"pence|mike|" \
+            r"sanders|bernie|" \
+            r"cortez|alexandria|ocasio-cortez|aoc|" \
+            r"pelosi|nancy|" \
+            r"mcconnell|mitch|" \
+            r"johnson|boris|" \
+            r"may|theresa|" \
+            r"sunak|rishi|" \
+            r"starmer|keir|" \
+            r"putin|vladimir|" \
+            r"jinping|xi|" \
+            r"modi|narendra|" \
+            r"macron|emmanuel|" \
+            r"merkel|angela|" \
+            r"trudeau|justin|" \
+            r"bolsonaro|jair|" \
+            r"erdogan|recep|tayyip|" \
+            r"morrison|scott|" \
+            r"ardern|jacinda" \
+            r")$"
+
+        regex_figures = re.compile(regex_figures_pattern, re.IGNORECASE)
+
+        # Other political words / phrases
+        regex_political_words_pattern = r"^(?:" \
+            r"abortion|guns|immigration|taxes|healthcare|" \
+            r"medicare|medicaid|climate|environment|protest|" \
+            r"democracy|socialism|capitalism|libertarianism|anarchy|freedom|rights|" \
+            r"marriage|equality|vote|voting|election|" \
+            r"police|crime|war|military|maga|woke|" \
+            r"libtard|snowflake|commie|comrade|sjw|capitalist|" \
+            r"redneck|redpill|gay|trans|queer|immigrant|" \
+            r"soyboy|cuck|karen|" \
+            r"fbi|fsb|kgb|ice|cia|idf" \
+            r")$"
+
+        regex_political_words = re.compile(regex_political_words_pattern, re.IGNORECASE)
+
+        # Locations
+        gc = geonamescache.GeonamesCache()
+        countries = set([c['name'].lower() for c in gc.get_countries().values()])
+        cities = set([c['name'].lower() for c in gc.get_cities().values()])
+
+        def mask_tokens(tokens: list) -> list:
+            """Filter out tokens based on the masking strategy using regex."""
+            if not isinstance(tokens, list):
+                return tokens
+
+            masked = []
+            for token in tokens:
+                # Strategy 1+: remove ideology keywords
+                if strategy >= 1 and regex_keywords.match(token):
+                    continue
+
+                # Strategy 2+: remove political figures
+                if strategy >= 2 and regex_figures.match(token):
+                    continue
+
+                # Strategy 3+: remove political words/phrases
+                if strategy >= 3 and regex_political_words.match(token):
+                    continue
+
+                # Strategy 4+: remove locations
+                if strategy >= 4 and (token.lower() in countries or token.lower() in cities):
+                    continue
+
+                masked.append(token)
+
+            return masked
+
+        # Mask the processed tokens in the dataset
+        dataset.processed = [mask_tokens(doc) for doc in dataset.processed]
+
+        # Also update the folds so training uses masked data
+        for fold in dataset.folds:
+            fold['train'] = [mask_tokens(doc) for doc in fold['train']]
+            fold['val'] = [mask_tokens(doc) for doc in fold['val']]
+
+        # Update the dataframe column as well
+        if 'processed' in dataset.df.columns:
+            dataset.df['processed'] = dataset.processed
+
+        if masking_config.get('get_descriptive_statistics_after_masking', False):
+            print("Descriptive statistics after masking not implemented yet.")
+
+        print("Masking complete")
+        return dataset
     
     def run(self):
         try:
@@ -148,19 +280,24 @@ class ExperimentEnvironment:
             filepath = data_config['file_path']
             self.dataset = pd.read_csv(filepath)
             print("Raw dataset is loaded")
+
             # Run descriptive statistics on raw data
             self.get_descriptive_stats()
             
             # Preprocess data (if modeling is enabled)
             processed_dataset = self.preprocess_data()
-            DatasetSaver.save_dataset(processed_dataset, "cache/political_leaning.joblib")
+            # DatasetSaver.save_dataset(processed_dataset, "cache/political_leaning.joblib")
             # Run modeling
-            if processed_dataset is not None:
-                model = self.train_model(processed_dataset)
+            # if processed_dataset is not None:
+            #     model = self.train_model(processed_dataset)
             
-            # Run masking experiments
-            #TODO: implement the masking and uncomment below
-            #self.run_masking()
+            # Run masking based on the integer code defined in the config json file
+            masked_dataset = self.mask(processed_dataset)
+            print('Masked dataset head:\n' , masked_dataset.df.head())
+            # DatasetSaver.save_dataset(masked_dataset, "cache/preprocessed_masked.joblib")
+
+            if masked_dataset is not None:
+                masked_model = self.train_model(masked_dataset)
 
             print("EXPERIMENT COMPLETE")
             

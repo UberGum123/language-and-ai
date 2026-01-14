@@ -3,7 +3,7 @@
         "file_path": "data/political_leaning.csv",
         "text_column": "post",
         "label_column": "political_leaning",
-        "author_column": "author_ID"
+        "author_column": "auhtor_ID"
     },
     "descriptive_statistics": {
         "enabled": false,

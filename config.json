@@ -13,14 +13,10 @@
         "get_top_n_words_per_label": 50
     },
     "modeling": {
-        "enabled": false,
-        "model_type": "BERT",
+        "enabled": true,
+        "model_type": "SVM",
         "hyperparameters": {
-            "model_name": "bert-base-uncased",
-            "learning_rate": 1e-5,
-            "epochs": 3,
-            "batch_size": 4,
-            "max_length": 128
+            "C": [0.1, 0.25, 0.5, 1, 5, 10]
         },
         "enable_visualizations": true
     },
@@ -33,5 +29,5 @@
         "get_descriptive_statistics_after_masking": false,
         "masking_strategy": 4
     },
-    "load_dataset": true
+    "load_dataset": false
 }

@@ -131,13 +131,13 @@ class ExperimentEnvironment:
         else:
             raise ValueError(f"Wrong model type: {model_type}, choose between SVM and BERT")
         
-    def mask(self):
+    def mask(self, dataset: pd.DataFrame) -> pd.DataFrame:
         print('Masking data')
         masking_config = self.config['masking']
 
         if not masking_config.get('enabled', False):
-            print("Masking disabled, using raw text.")
-            return self.dataset
+            print("Masking disabled, returning dataset unchanged.")
+            return dataset
 
         strategy = masking_config.get('masking_strategy', 0)
         text_column = self.config['data']['text_column']
@@ -238,14 +238,16 @@ class ExperimentEnvironment:
 
             return text
 
-        self.dataset[text_column] = self.dataset[text_column].astype(str).apply(mask_string)
+        dataset.df[text_column] = (
+        dataset.df[text_column].astype(str).apply(mask_string)
+        )
 
         if masking_config.get('get_descriptive_statistics_after_masking', False):
             print("Descriptive statistics after masking not implemented yet.")
 
         print("Masking complete")
 
-        return self.dataset
+        return dataset
     
     def run(self):
         try:
@@ -257,18 +259,23 @@ class ExperimentEnvironment:
             filepath = data_config['file_path']
             self.dataset = pd.read_csv(filepath)
             print("Raw dataset is loaded")
+
             # Run descriptive statistics on raw data
             self.get_descriptive_stats()
             
             # Preprocess data (if modeling is enabled)
             processed_dataset = self.preprocess_data()
-            DatasetSaver.save_dataset(processed_dataset, "cache/political_leaning.joblib")
+            # DatasetSaver.save_dataset(processed_dataset, "cache/political_leaning.joblib")
             # Run modeling
-            if processed_dataset is not None:
-                model = self.train_model(processed_dataset)
+            # if processed_dataset is not None:
+            #     model = self.train_model(processed_dataset)
             
             # Run masking based on the integer code defined in the config json file
-            self.mask()
+            masked_dataset = self.mask(processed_dataset)
+            # DatasetSaver.save_dataset(masked_dataset, "cache/preprocessed_masked.joblib")
+
+            if masked_dataset is not None:
+                masked_model = self.train_model(masked_dataset)
 
             print("EXPERIMENT COMPLETE")
             

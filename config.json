@@ -14,9 +14,13 @@
     },
     "modeling": {
         "enabled": true,
-        "model_type": "SVM",
+        "model_type": "BERT",
         "hyperparameters": {
-            "C": [0.1, 0.25, 0.5, 1, 5, 10]
+            "model_name": "bert-base-uncased",
+            "learning_rate": 2e-5,
+            "epochs": 3,
+            "batch_size": 4,
+            "max_length": 256
         },
         "enable_visualizations": true
     },

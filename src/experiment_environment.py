@@ -61,13 +61,15 @@ class ExperimentEnvironment:
                 filepath,
                 text_column=text_column,
                 label_column=label_column,
+                author_column=author_column,
                 load_from_existing=load_from_existing
             )
         elif self.config["modeling"]["model_type"] == "BERT":
             processed_dataset = reader.load_and_preprocess_for_bert(
                 filepath,
                 text_column=text_column,
-                label_column=label_column
+                label_column=label_column,
+                author_column=author_column
             )
         else:
             raise ValueError(f"Wrong model type: {self.config['modeling']['model_type']}, choose between SVM and BERT")
@@ -270,6 +272,95 @@ class ExperimentEnvironment:
         print("Masking complete")
         return dataset
     
+    def mask_posts_before_preprocessing_for_bert(self, dataset) -> Dataset:
+        """
+        Masks words in the 'post' column of the dataset before any preprocessing.
+        Strategy levels are cumulative:
+            1: Remove ideology/party keywords
+            2: Remove political figures
+            3: Remove political words/phrases
+            4: Remove locations (countries and cities)
+        """
+        print('Masking data in post column')
+        masking_config = self.config['masking']
+
+        if not masking_config.get('enabled', False):
+            print("Masking disabled, returning dataset unchanged.")
+            return dataset
+
+        strategy = masking_config.get('masking_strategy', 0)
+        print(f"Applying masking strategy: {strategy}")
+
+        # --- Compile regex patterns ---
+        regex_keywords_pattern = r"^(?:" \
+            r"cons|conser|conserv|conservative|" \
+            r"lib(?:eral|ertarian|center|left|right|\w{0,3})|dem(?:ocrat|ocrats|s|\w{0,3})" \
+            r"prog|progressive|" \
+            r"center|centre| center(?:left|right)?|centre(?:left|right)?|centrist|centrism|moderate(?:s|ly)" \
+            r"leftist|lefty|left[-\s]?wing|" \
+            r"righty|right[-\s]?wing|" \
+            r"far[-\s]?(left|right)|alt[-\s]?(right|left)|" \
+            r"libertarian|centrist|moderate|socialist|anarchist|communist|marxist|" \
+            r"repub|republican|republicans|" \
+            r"gop|dnc" \
+            r")$"
+        regex_keywords = re.compile(regex_keywords_pattern, re.IGNORECASE)
+
+        regex_figures_pattern = r"^(?:" \
+            r"trump|donald|biden|joe|obama|barack|bush|george|" \
+            r"clinton|bill|hillary|harris|kamala|pence|mike|sanders|bernie|" \
+            r"cortez|alexandria|ocasio-cortez|aoc|pelosi|nancy|mcconnell|mitch|" \
+            r"johnson|boris|may|theresa|sunak|rishi|starmer|keir|putin|vladimir|" \
+            r"jinping|xi|modi|narendra|macron|emmanuel|merkel|angela|trudeau|justin|" \
+            r"bolsonaro|jair|erdogan|recep|tayyip|morrison|scott|ardern|jacinda" \
+            r")$"
+        regex_figures = re.compile(regex_figures_pattern, re.IGNORECASE)
+
+        regex_political_words_pattern = r"^(?:" \
+            r"abortion|guns|immigration|taxes|healthcare|medicare|medicaid|" \
+            r"climate|environment|protest|democracy|socialism|capitalism|" \
+            r"libertarianism|anarchy|freedom|rights|marriage|equality|vote|voting|election|" \
+            r"police|crime|war|military|maga|woke|libtard|snowflake|commie|comrade|" \
+            r"sjw|capitalist|redneck|redpill|gay|trans|queer|immigrant|" \
+            r"soyboy|cuck|karen|fbi|fsb|kgb|ice|cia|idf" \
+            r")$"
+        regex_political_words = re.compile(regex_political_words_pattern, re.IGNORECASE)
+
+        # Locations
+        gc = geonamescache.GeonamesCache()
+        countries = set([c['name'].lower() for c in gc.get_countries().values()])
+        cities = set([c['name'].lower() for c in gc.get_cities().values()])
+
+        def mask_text(text: str) -> str:
+            """Mask words in a string based on the strategy."""
+            if not isinstance(text, str):
+                return text
+
+            words = text.split()
+            masked_words = []
+            for word in words:
+                # Strategy 1+: remove ideology keywords
+                if strategy >= 1 and regex_keywords.match(word):
+                    continue
+                # Strategy 2+: remove political figures
+                if strategy >= 2 and regex_figures.match(word):
+                    continue
+                # Strategy 3+: remove political words/phrases
+                if strategy >= 3 and regex_political_words.match(word):
+                    continue
+                # Strategy 4+: remove locations
+                if strategy >= 4 and (word.lower() in countries or word.lower() in cities):
+                    continue
+                masked_words.append(word)
+            return " ".join(masked_words)
+
+        # Apply masking to the post column
+        dataset.df['post'] = dataset.df['post'].apply(mask_text)
+
+        print("Masking complete")
+        return dataset
+
+    
     def run(self):
         try:
             # Validate configuration
@@ -285,19 +376,24 @@ class ExperimentEnvironment:
             self.get_descriptive_stats()
             
             # Preprocess data (if modeling is enabled)
-            processed_dataset = self.preprocess_data()
+            # processed_dataset = self.preprocess_data()
             # DatasetSaver.save_dataset(processed_dataset, "cache/political_leaning.joblib")
             # Run modeling
             # if processed_dataset is not None:
             #     model = self.train_model(processed_dataset)
             
             # Run masking based on the integer code defined in the config json file
-            masked_dataset = self.mask(processed_dataset)
-            print('Masked dataset head:\n' , masked_dataset.df.head())
+            # masked_dataset = self.mask(dataset=self.dataset)
+            # print('Masked dataset head:\n' , masked_dataset.df.head())
             # DatasetSaver.save_dataset(masked_dataset, "cache/preprocessed_masked.joblib")
 
+            # We have to mask berfore preprocessing for bert since the tokenization splits to sub-word level
+            self.dataset = Dataset(self.dataset)
+            masked_dataset = self.mask_posts_before_preprocessing_for_bert(dataset=self.dataset)
+            bert_processed_dataset = self.preprocess_data()
+
             if masked_dataset is not None:
-                masked_model = self.train_model(masked_dataset)
+                masked_model = self.train_model(bert_processed_dataset)
 
             print("EXPERIMENT COMPLETE")
             

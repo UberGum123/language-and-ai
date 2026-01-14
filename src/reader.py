@@ -203,7 +203,7 @@ class Reader:
 
         return dataset
     
-    def load_and_preprocess_for_bert(self, csv_path, text_column, label_column, text_pair_column=None):
+    def load_and_preprocess_for_bert(self, csv_path, text_column, label_column, author_column, text_pair_column=None):
         """
         Preprocessing for BERT (Uncased) based on Section 3 of Devlin et al. (2018).
         
@@ -236,10 +236,11 @@ class Reader:
         # Create stratified folds
         X = dataset.processed
         y = df[label_column].tolist()
+        groups = df[author_column].tolist()
         
-        skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=self.random_state)
+        skf = StratifiedGroupKFold(n_splits=self.n_splits, shuffle=True, random_state=self.random_state)
         
-        for fold_id, (train_idx, val_idx) in enumerate(skf.split(X, y)):
+        for fold_id, (train_idx, val_idx) in enumerate(skf.split(X, y, groups)):
             fold = {
                 "fold_id": fold_id,
                 "train": [X[i] for i in train_idx],  

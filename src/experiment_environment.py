@@ -154,13 +154,13 @@ class ExperimentEnvironment:
         # Ideology/party keywords
         regex_keywords_pattern = r"^(?:" \
             r"cons|conser|conserv|conservative|" \
-            r"lib|liber|liberal|libertarian|" \
+            r"lib(?:eral|ertarian|center|left|right|\w{0,3})|dem(?:ocrat|ocrats|s|\w{0,3})" \
             r"prog|progressive|" \
+            r"center|centre| center(?:left|right)?|centre(?:left|right)?|centrist|centrism|moderate(?:s|ly)" \
             r"leftist|lefty|left[-\s]?wing|" \
             r"righty|right[-\s]?wing|" \
             r"far[-\s]?(left|right)|alt[-\s]?(right|left)|" \
             r"libertarian|centrist|moderate|socialist|anarchist|communist|marxist|" \
-            r"dem|demo|democrat|democrats|democratic|" \
             r"repub|republican|republicans|" \
             r"gop|dnc" \
             r")$"
@@ -202,10 +202,10 @@ class ExperimentEnvironment:
         regex_political_words_pattern = r"^(?:" \
             r"abortion|guns|immigration|taxes|healthcare|" \
             r"medicare|medicaid|climate|environment|protest|" \
-            r"democracy|socialism|capitalism|freedom|rights|" \
+            r"democracy|socialism|capitalism|libertarianism|anarchy|freedom|rights|" \
             r"marriage|equality|vote|voting|election|" \
             r"police|crime|war|military|maga|woke|" \
-            r"libtard|snowflake|commie|sjw|" \
+            r"libtard|snowflake|commie|comrade|sjw|capitalist|" \
             r"redneck|redpill|gay|trans|queer|immigrant|" \
             r"soyboy|cuck|karen|" \
             r"fbi|fsb|kgb|ice|cia|idf" \

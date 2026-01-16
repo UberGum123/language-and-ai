@@ -64,7 +64,7 @@ class Modeler:
 
         Args:
             dataset: Preprocessed dataset with folds.
-            (Optional) hyperparameters: a list of C's for the SVM model.
+            hyperparameters: a list of C's for the SVM model.
     """    
     @staticmethod
     def train_svm(dataset, hyperparameters):
@@ -191,6 +191,10 @@ class Modeler:
 
     @staticmethod
     def train_bert(dataset, hyperparameters, enable_visualizations=True):
+        """Trains and evaluates BERT on the given dataset.
+        Steps:
+        1. Tokenization using BERT tokenizer.
+        2. Fine-tuning BERT model using Trainer API."""
         print("Starting BERT training...")
         
         logger = Logger(log_file="bert_training_results.log")
@@ -233,7 +237,7 @@ class Modeler:
             y_train = label_encoder.transform(fold["train_labels"])
             y_val = label_encoder.transform(fold["val_labels"])
             
-            # 3. USE OPTIMIZED DATASET
+            # 
             train_dataset = TokenListDataset(train_encodings, y_train)
             val_dataset = TokenListDataset(val_encodings, y_val)
 
@@ -256,9 +260,8 @@ class Modeler:
                 metric_for_best_model="f1_macro",
                 logging_dir=f'./logs/bert_fold_{fold["fold_id"]}',
                 logging_steps=50,
-                save_total_limit=1, # Save space
+                save_total_limit=1, 
                 report_to="none",
-                # Add these for speed/memory if using a modern GPU:
                 fp16=torch.cuda.is_available(), 
             )
             
@@ -290,9 +293,7 @@ class Modeler:
         
         # Visualizations
         if visualizer:
-            print(f"\n{'='*60}")
             print(f"GENERATING VISUALIZATIONS")
-            print(f"{'='*60}\n")
             
             mean_cm = np.mean(logger.confusion_matrices, axis=0)
             visualizer.plot_confusion_matrix(

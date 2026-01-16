@@ -93,7 +93,7 @@ class Logger:
         """
         Logs a header for the specific hyperparameter setting being run.
         """
-        msg = f"\n\n{'='*40}\nRunning Configuration: {config_name}\nParameters: {params}\n{'='*40}"
+        msg = f"\nRunning Configuration: {config_name}\nParameters: {params}\n{'='*40}"
         self._print_and_save(msg)
         
     def log_overall_performance(self, class_names):

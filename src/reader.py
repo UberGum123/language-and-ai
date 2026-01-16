@@ -148,6 +148,20 @@ class Reader:
         author_column,
         load_from_existing
     ):
+        """ Loads and preprocesses the dataset from a CSV file for SVM
+        classification. Preprocessing steps include:
+        - Text normalization (lowercasing, removing accents)
+        - Tokenization
+        - Stopword removal 
+        - Lemmatization 
+        - Frequency cutoff
+        Also creates stratified k-fold splits.
+        Args:
+            csv_path (str): Path to the CSV file.
+            text_column (str): Name of the column containing the text data.
+            label_column (str): Name of the column containing the labels.
+            author_column (str): Name of the column containing author IDs.
+            load_from_existing (bool): Whether to load a preprocessed dataset from cache."""
         if load_from_existing:
             return DatasetSaver.load_dataset("cache/political_leaning.joblib")
 
@@ -206,10 +220,15 @@ class Reader:
     def load_and_preprocess_for_bert(self, csv_path, text_column, label_column, text_pair_column=None):
         """
         Preprocessing for BERT (Uncased) based on Section 3 of Devlin et al. (2018).
+        Simple preprocessing: lowercasing for the uncased model, removing accents, splitting into k folds for CV.
         
         Args:
-            text_pair_column (str): Optional. The column name for the second sentence 
-                                    if the task involves sentence pairs (e.g., Q&A, Entailment).
+            csv_path (str): Path to the CSV file.
+            text_column (str): Name of the column containing the main text.
+            label_column (str): Name of the column containing labels.
+            text_pair_column (str, optional): Name of the column containing the second text for pairs.
+        Returns:
+            Dataset: Preprocessed dataset with stratified k-folds (NOTE: not a pandas df object, )
         """
         df = pd.read_csv(csv_path)
         

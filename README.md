@@ -47,6 +47,10 @@ nltk==3.8.1
 contractions==0.1.73
 pandarallel==1.6.5
 seaborn ==  0.13.2
+transformers
+accelerator
+seaborn
+
 ```
 
 ### Data
@@ -80,15 +84,16 @@ The experiment can be configured by modifying the `config.json` file. The follow
     - `get_top_n_words_per_label`: Number of top words to retrieve for each label.
 - **`modeling`**:
     - `enabled`: Set to `true` to run the modeling part.
-    - `model_type`: The type of model to use (currently "SVM").
+    - `model_type`: The type of model to use ("SVM" or "BERT").
     - `hyperparameters`:
         - `C`: A list of C values to test for the SVM model.
+        - For BERT: [batch_size, epochs, max_length, learning_rate, model_type]
 - **`preprocessing`**:
     - `number_of_folds`: Number of folds for cross-validation.
 - **`masking`**:
     - `enabled`: Set to `true` to enable masking.
     - `masking_strategy`: The masking strategy to use.
-
+- **`load_dataset`**: set to true to load a pre-processed dataset from cache (saves time!)
 ## Project Structure
 
 - **`main.py`**: The main entry point to run the experiment.

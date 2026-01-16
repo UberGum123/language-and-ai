@@ -1,6 +1,6 @@
 # Political Leaning Classification
 
-This project aims to classify political leaning based on text data. It utilizes a Support Vector Machine (SVM) model to predict whether the author of a text has a left, right, or center political leaning. The project is designed to be a reproducible research pipeline, including data preprocessing, model training, and evaluation.
+This project aims to classify political leaning based on text data. It utilizes a Support Vector Machine (SVM) model to predict whether the author of a text has a left, right, or center political leaning, as well as BERT. The project is designed to be a reproducible research pipeline, including data preprocessing, model training, and evaluation.
 
 ## tl;dr
 

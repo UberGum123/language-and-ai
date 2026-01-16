@@ -10,15 +10,14 @@ This repository contains Python code to train and evaluate an SVM model for poli
 
 If you use this code in your research, please cite:
 
-#TODO add proper citation
 ```
 @misc{your_name_2024_languageandai,
-  author = {Your Name},
+  author = {Raluca Marzac, Joris Lesterhuis, Sven Collins, Sofiia Larina},
   title = {Political Leaning Classification},
   year = {2024},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/your-username/language-and-ai}},
+  howpublished = {\url{https://github.com/UberGum123/language-and-ai}},
 }
 ```
 

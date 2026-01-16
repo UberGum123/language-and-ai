@@ -4,7 +4,7 @@ This project aims to classify political leaning based on text data. It utilizes 
 
 ## tl;dr
 
-This repository contains Python code to train and evaluate an SVM model for political leaning classification. The main script `main.py` runs the experiment based on a `config.json` file, which allows for easy manipulation of the experiment.
+This repository contains Python code to train and evaluate both a SVM and a BERT model for political leaning classification. The main script `main.py` runs the experiment based on a `config.json` file, which allows for easy manipulation of the experiment.
 
 ## Citation
 
@@ -92,6 +92,7 @@ The experiment can be configured by modifying the `config.json` file. The follow
 - **`masking`**:
     - `enabled`: Set to `true` to enable masking.
     - `masking_strategy`: The masking strategy to use.
+    - `get_descriptive_statistics_after_preprocessing` : Set to true to get descriptive statistics after preprocessing.
 - **`load_dataset`**: set to true to load a pre-processed dataset from cache (saves time!)
 ## Project Structure
 
@@ -104,9 +105,9 @@ The experiment can be configured by modifying the `config.json` file. The follow
     - **`model.py`**: Implements the SVM model.
     - **`descriptive_statistics.py`**: Generates descriptive statistics.
     - **`visualizations.py`**: Creates plots and visualizations.
+    - **`logger.py`**: Handles logging.
 - **`data/`**: Should contain the dataset.
 - **`output/`**: Contains the output of the experiment (logs, plots).
-- **`cache/`**: Caches intermediate results.
 
 ## How to Extend
 
@@ -115,4 +116,4 @@ The project is modular and can be extended. For example, to add a new model, you
 1.  Add the model implementation in `src/model.py`.
 2.  Add a new model type in `src/experiment_environment.py` to select your new model.
 3.  Add the new model and its parameters to `config.json`.
- `LICENSE` file has not been added yet, but MIT is a common choice for open source projects.)*
+4.  Add the dataset to be used in the `data` folder.
